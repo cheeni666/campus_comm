@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#cecfce">
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/header2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#3b5998"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/title2"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:layout_below="@+id/header2"
+        android:background="#3b5998"
+        android:text="WRITE MESSAGE"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:textSize="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="#000000"
+        android:hint="Put your text here" />
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cover"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/editText2"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:hint="Put your text here"
+        android:alpha=".5" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="80px"
+        android:id="@+id/send2"
+        android:layout_alignBottom="@+id/editText2"
+        android:layout_toRightOf="@+id/editText2"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/plane" />
+    <com.software.shell.fab.ActionButton
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editText2"
+        android:isScrollContainer="false"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin" />
+    <io.codetail.widget.RevealFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/action_button"
+        android:layout_alignParentLeft="true"
+        >
+
+        <ListView
+            android:layout_width="200dp"
+            android:layout_marginLeft="10dp"
+            android:layout_height="250dp"
+            android:id="@+id/listView2"
+            android:visibility="invisible"
+            android:background="@drawable/shadow"
+            android:headerDividersEnabled="false"
+            android:alpha=".8"
+            android:elevation="5dp"
+            android:drawSelectorOnTop="false"
+            android:translationZ="5dp"
+            style="@style/Animation.AppCompat.DropDownUp" />
+        <!-- Transform view -->
+
+    </io.codetail.widget.RevealFrameLayout>
+    <Button
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/buttontag"
+        android:layout_marginLeft="200dp"
+        android:layout_marginBottom="240dp"
+        android:alpha="0"
+        android:layout_alignBottom="@+id/action_button"
+        android:background="@drawable/arrow" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/title2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:translationZ="5dp"
+        android:elevation="5dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/shadow"
+        android:clickable="false" />
+</RelativeLayout>

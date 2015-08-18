@@ -30,7 +30,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     ViewPager pager;
     String username;
     SharedPreferences store;
-    int option;
     String temp = null;
     int f = 1;
     MediaPlayer m;
@@ -46,14 +45,12 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
                     NotificationManager notificationManager = (NotificationManager)
                             getSystemService(NOTIFICATION_SERVICE);
                     notificationManager.cancel(0);
-                    //notificationManager.cancelAll();
                     m.start();
                 } else if (!t.equals(temp)) {
                     temp = t;
                     NotificationManager notificationManager = (NotificationManager)
                             getSystemService(NOTIFICATION_SERVICE);
                     notificationManager.cancel(0);
-                    //notificationManager.cancelAll();
                     m.start();
                 }
             }
@@ -73,8 +70,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         m = MediaPlayer.create(this, R.raw.text);
 
         username = store.getString("usertext", null);
-        if (username.equals("admin")) option = 0;
-        else option = 1;
         setContentView(R.layout.activity_posts);
         initialisePaging();
         t.start();
@@ -91,10 +86,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         pager.setAdapter(mPagerAdapter);
     }
 
-    @Override
-    public int getoption1() {
-        return option;
-    }
 
     @Override
     public void logout1() {
@@ -128,10 +119,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         return;
     }
 
-    @Override
-    public int getoption2() {
-        return option;
-    }
 
     @Override
     public String getusername1() {

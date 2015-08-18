@@ -24,7 +24,6 @@ public class NITpost extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String username;
-    int option;
     View v;
     TextView status;
     Button yes, no;
@@ -79,7 +78,6 @@ public class NITpost extends Fragment {
         status = (TextView) v.findViewById(R.id.header1);
         yes = (Button) v.findViewById(R.id.yes1);
         no = (Button) v.findViewById(R.id.no1);
-        option = mListener.getoption1();
         username = mListener.getusername1();
         status.setText(username);
 
@@ -156,8 +154,6 @@ public class NITpost extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getusername1();
-
-        public int getoption1();
 
         public void logout1();
 

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public final class CommonUtilities {
 
     // give your server registration url here
-    static final String SERVER_URL = "http://8dfda597.ngrok.io//insertuser.php";
-    static final String POST_URL = "http://8dfda597.ngrok.io//sendall.php";
+    static final String SERVER_URL = "http://d497e804.ngrok.io/insertuser.php";
+    static final String POST_URL = "http://d497e804.ngrok.io/sendall.php";
 
     // Google project id
     static final String SENDER_ID = "835229264934";

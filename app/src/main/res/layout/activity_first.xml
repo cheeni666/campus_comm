@@ -1,34 +1,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/cool">
 
     <Button
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        android:text="ADMIN"
-        android:id="@+id/button"
-        android:layout_above="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:padding="0dp"
-        android:layout_margin="0dp"
-        android:alpha="0.75"
-        android:background="#795700"
-        android:textSize="50dp"
-        android:textColor="#ffa400"
-        android:onClick="admin" />
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:text="USER"
+        android:text="ENTER"
         android:id="@+id/button2"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:padding="0dp"
         android:layout_margin="0dp"
         android:alpha="0.75"
-        android:background="#0a4b00"
+        android:background="#204b3f"
         android:textSize="50dp"
         android:textColor="#ffa400"
         android:onClick="user" />
@@ -36,9 +22,9 @@
     <ImageView
         android:layout_width="400px"
         android:layout_height="400px"
-        android:id="@+id/imageView"
+        android:id="@+id/imagegif"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/animator" />
+        android:alpha=".75"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

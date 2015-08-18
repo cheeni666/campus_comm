@@ -25,6 +25,7 @@ import com.software.shell.fab.ActionButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -48,7 +49,6 @@ public class STUDpost extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String username;
-    int option;
     View v;
     Button send;
     EditText mes;
@@ -154,7 +154,6 @@ public class STUDpost extends Fragment {
 
         send = (Button) v.findViewById(R.id.send2);
         mes = (EditText) v.findViewById(R.id.editText2);
-        option = mListener.getoption2();
         username = mListener.getusername2();
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,8 +232,6 @@ public class STUDpost extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getusername2();
-
-        public int getoption2();
 
         public void logout2();
     }

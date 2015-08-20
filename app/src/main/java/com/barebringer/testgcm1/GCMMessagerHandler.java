@@ -34,12 +34,13 @@ public class GCMMessagerHandler extends IntentService {
         Bundle extras = intent.getExtras();
 
         mes = extras.getString("data");
-
+        if(mes==null)return;
         SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
         String temp=store.getString("temp",null);
         String dtag=store.getString("defTags",null);
         try {
             JSONObject o=new JSONObject(mes);
+            if(o==null)return;
             String mtag=o.getString("tags");
             String[] dl=dtag.split("/");
             String[] ml=mtag.split("/");

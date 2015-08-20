@@ -32,7 +32,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     SharedPreferences store;
     String temp = null;
     int f = 1;
-    MediaPlayer m;
 
     Runnable r = new Runnable() {
         @Override
@@ -42,16 +41,8 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
                 if (t == null) continue;
                 else if (temp == null) {
                     temp = t;
-                    NotificationManager notificationManager = (NotificationManager)
-                            getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.cancel(0);
-                    m.start();
                 } else if (!t.equals(temp)) {
                     temp = t;
-                    NotificationManager notificationManager = (NotificationManager)
-                            getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.cancel(0);
-                    m.start();
                 }
             }
         }
@@ -66,8 +57,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         m_amAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         m_amAudioManager.setMode(AudioManager.MODE_IN_CALL);
         m_amAudioManager.setSpeakerphoneOn(false);
-
-        m = MediaPlayer.create(this, R.raw.text);
 
         username = store.getString("usertext", null);
         setContentView(R.layout.activity_posts);
@@ -134,7 +123,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     protected void onStop() {
         super.onStop();
         f = 0;
-        m.release();
         finish();
     }
 
@@ -142,32 +130,7 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     protected void onPause() {
         super.onPause();
         f = 0;
-        m.release();
         finish();
-    }
-
-    public void unregister() {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-                    }
-                    gcm.unregister();
-                    msg = "Device unregistered";
-                    Log.i("GCM", msg);
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-
-                }
-                return msg;
-            }
-
-        }.execute(null, null, null);
-
     }
 
 }

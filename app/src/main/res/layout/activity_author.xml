@@ -12,11 +12,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="USERNAME"
         android:id="@+id/textView"
-        android:textSize="50dp"
+        android:textSize="30dp"
         android:layout_marginTop="77dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:gravity="center_vertical" />
 
     <EditText
         android:layout_width="fill_parent"
@@ -32,11 +33,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="PASSWORD"
         android:id="@+id/textView2"
-        android:textSize="50dp"
+        android:textSize="30dp"
         android:textColor="#ffffff"
         android:layout_below="@+id/_user"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:gravity="center_vertical" />
 
     <EditText
         android:layout_width="fill_parent"
@@ -48,18 +50,21 @@
         android:password="true" />
 
     <Button
-        android:layout_width="300dp"
-        android:layout_height="75dp"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:text="LOGIN"
         android:id="@+id/button3"
-        android:textSize="40dp"
+        android:textSize="30dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:onClick="submit"
-        android:background="#06809a" />
+        android:background="#06809a"
+        android:translationZ="10dp"
+        android:elevation="10dp"
+        android:typeface="monospace" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="DETAILS"
@@ -67,6 +72,16 @@
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/textView"
         android:layout_alignStart="@+id/textView"
-        android:textSize="30dp" />
+        android:textSize="30dp"
+        android:gravity="center_horizontal"
+        android:typeface="serif" />
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:progressDrawable="@drawable/circular_progress_bar" />
 
 </RelativeLayout>

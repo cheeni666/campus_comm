@@ -13,15 +13,15 @@
         android:layout_alignParentBottom="true"
         android:padding="0dp"
         android:layout_margin="0dp"
-        android:alpha="0.75"
-        android:background="#204b3f"
+        android:alpha="0.5"
+        android:background="#295c63"
         android:textSize="50dp"
-        android:textColor="#ffa400"
-        android:onClick="user" />
+        android:textColor="#c5ff2d"
+        android:onClick="enter" />
 
     <ImageView
-        android:layout_width="400px"
-        android:layout_height="400px"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:id="@+id/imagegif"
         android:layout_alignParentTop="true"
         android:alpha=".75"

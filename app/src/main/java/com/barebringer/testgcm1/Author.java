@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +44,7 @@ public class Author extends Activity {
     static String name,password;
     Intent i;
     ProgressBar spinner;
-    private static final int MAX_ATTEMPTS = 5;
+    private static final int MAX_ATTEMPTS = 3;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
     TelephonyManager t;
@@ -112,6 +111,7 @@ public class Author extends Activity {
                         backoff *= 2;
                     }
                 }
+                h.sendEmptyMessage(0);
                 return msg;
             }
 

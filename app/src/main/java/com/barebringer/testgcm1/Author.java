@@ -81,7 +81,7 @@ public class Author extends Activity {
                     jsonObject.put("username",name);
                     jsonObject.put("password",password);
                     jsonObject.put("gcmid",regId);
-                    jsonObject.put("action_id",0);
+                    jsonObject.put("action_id","0");
                     jsonObject.put("ad_id", t.getDeviceId());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -238,11 +238,11 @@ public class Author extends Activity {
             }
             try {
                 JSONObject js=new JSONObject(line);
-                if (js.getInt("status_code")==1){
+                if (js.get("status_code").equals("1")){
                     SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = store.edit();
                     editor.putString("usertext", name);
-                    editor.putString("user_id", js.getInt("user_id") + "");
+                    editor.putString("user_id", js.get("user_id").toString());
                     editor.apply();
                     finish();
                     startActivity(i);

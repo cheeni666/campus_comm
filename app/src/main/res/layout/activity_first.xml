@@ -20,8 +20,8 @@
         android:onClick="enter" />
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200px"
+        android:layout_height="200px"
         android:id="@+id/imagegif"
         android:layout_alignParentTop="true"
         android:alpha=".75"

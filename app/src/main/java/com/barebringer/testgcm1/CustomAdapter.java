@@ -2,6 +2,7 @@ package com.barebringer.testgcm1;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,26 +41,28 @@ public class CustomAdapter extends ArrayAdapter<String> {
         v.setBackgroundColor(color);
         try {
             JSONObject j = new JSONObject(complete);
-            identitytext.setText(j.getString("username") + " posted");
+            identitytext.setText(j.getString("sender") + " posted");
             posttext.setText(j.getString("message"));
-            String[] timestamp = j.getString("timestamp").split(":");
-            if (!timestamp[0].equals(c.get(Calendar.YEAR) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.YEAR) + "") - Integer.parseInt(timestamp[0]);
+            String[] timestamp = j.getString("timestamp").split(" ");
+            String[] date = timestamp[0].split("-");
+            String[] time = timestamp[1].split(":");
+            if (c.get(Calendar.YEAR) != Integer.parseInt(date[0])) {
+                int t = c.get(Calendar.YEAR) - Integer.parseInt(date[0]);
                 times.setText(t + " years ago");
-            } else if (!timestamp[1].equals(c.get(Calendar.MONTH) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.MONTH) + "") - Integer.parseInt(timestamp[1]);
+            } else if (1 + c.get(Calendar.MONTH) != Integer.parseInt(date[1])) {
+                int t = 1 + c.get(Calendar.MONTH) - Integer.parseInt(date[1]);
                 times.setText(t + " months ago");
-            } else if (!timestamp[2].equals(c.get(Calendar.DAY_OF_MONTH) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.DAY_OF_MONTH) + "") - Integer.parseInt(timestamp[2]);
+            } else if (c.get(Calendar.DAY_OF_MONTH) != Integer.parseInt(date[2])) {
+                int t = c.get(Calendar.DAY_OF_MONTH) - Integer.parseInt(date[2]);
                 times.setText(t + " days ago");
-            } else if (!timestamp[3].equals(c.get(Calendar.HOUR_OF_DAY) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.HOUR_OF_DAY) + "") - Integer.parseInt(timestamp[3]);
+            } else if (c.get(Calendar.HOUR_OF_DAY) != Integer.parseInt(time[0])) {
+                int t = c.get(Calendar.HOUR_OF_DAY) - Integer.parseInt(time[0]);
                 times.setText(t + " hours ago");
-            } else if (!timestamp[4].equals(c.get(Calendar.MINUTE) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.MINUTE) + "") - Integer.parseInt(timestamp[4]);
+            } else if (c.get(Calendar.MINUTE) != Integer.parseInt(time[1])) {
+                int t = c.get(Calendar.MINUTE) - Integer.parseInt(time[1]);
                 times.setText(t + " minutes ago");
-            } else if (!timestamp[5].equals(c.get(Calendar.SECOND) + "")) {
-                int t = Integer.parseInt(c.get(Calendar.SECOND) + "") - Integer.parseInt(timestamp[5]);
+            } else if (c.get(Calendar.SECOND) != Integer.parseInt(time[2])) {
+                int t = c.get(Calendar.SECOND) - Integer.parseInt(time[2]);
                 times.setText(t + " seconds ago");
             }
         } catch (JSONException e) {

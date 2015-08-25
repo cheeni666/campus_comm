@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.content.Context;
 import android.content.ContentValues;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MyDBHandler extends SQLiteOpenHelper {
     Context cont;
 
@@ -23,7 +26,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + TABLE_PRODUCTS + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_NAME + " TEXT " +
                 ");";
         db.execSQL(query);
@@ -37,8 +40,16 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     //Add a new row to the database
     public void addName(String p) {
+        String id="";
+        try {
+            JSONObject js=new JSONObject(p);
+            id=js.getString("msg_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, p);
+        values.put(COLUMN_ID,Integer.parseInt(id));
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_PRODUCTS, null, values);
         db.close();

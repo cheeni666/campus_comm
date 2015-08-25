@@ -12,6 +12,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -133,4 +135,30 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyDBHandler db=new MyDBHandler(this,null,null,1);
+        SQLiteDatabase dj=db.getDB();
+        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+        Cursor c = dj.rawQuery(query, null);
+        //Move to the first row in your results
+        c.moveToFirst();
+        int lat_id=0;
+        if(c.getCount()!=0){
+            lat_id=c.getInt(c.getColumnIndex("_id"));
+        }
+        lat_id-=20;
+        lat_id++;
+        query="DELETE FROM " + "posts" + " WHERE _id < " + lat_id + ";";
+        dj.execSQL(query);
+        dj.close();
+        db.close();
+    }
 }

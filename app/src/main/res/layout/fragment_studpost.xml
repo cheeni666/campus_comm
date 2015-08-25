@@ -90,12 +90,10 @@
             android:visibility="invisible"
             android:background="@drawable/shadow"
             android:headerDividersEnabled="false"
-            android:alpha=".8"
             android:elevation="5dp"
             android:isScrollContainer="false"
             android:drawSelectorOnTop="false"
-            android:translationZ="5dp"
-            style="@style/Animation.AppCompat.DropDownUp" />
+            android:translationZ="5dp"/>
         <!-- Transform view -->
 
     </io.codetail.widget.RevealFrameLayout>

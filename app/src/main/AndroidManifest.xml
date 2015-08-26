@@ -46,8 +46,7 @@
         <activity
             android:name=".Author"
             android:screenOrientation="portrait"
-            android:label="Delta"
-            android:theme="@android:style/Theme.Dialog" >
+            android:label="Delta">
         </activity>
         <activity
             android:name=".Posts"

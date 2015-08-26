@@ -4,6 +4,14 @@
     tools:context=".MainActivity"
     android:background="@drawable/cool">
 
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imagegif"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/button2" />
+
     <Button
         android:layout_width="fill_parent"
         android:layout_height="100dp"
@@ -14,17 +22,10 @@
         android:padding="0dp"
         android:layout_margin="0dp"
         android:alpha="0.5"
-        android:background="#295c63"
+        android:background="#63611e"
         android:textSize="50dp"
         android:textColor="#c5ff2d"
         android:onClick="enter" />
 
-    <ImageView
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:id="@+id/imagegif"
-        android:layout_alignParentTop="true"
-        android:alpha=".75"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

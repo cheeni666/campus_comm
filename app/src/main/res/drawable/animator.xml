@@ -1,27 +1,16 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
-    android:oneshot="false">
+    android:oneshot="true">
 
-    <item android:drawable="@drawable/d1" android:duration="100" />
-    <item android:drawable="@drawable/d2" android:duration="100" />
-    <item android:drawable="@drawable/d3" android:duration="100" />
-    <item android:drawable="@drawable/d4" android:duration="100" />
-    <item android:drawable="@drawable/d5" android:duration="100" />
-    <item android:drawable="@drawable/d6" android:duration="100" />
-    <item android:drawable="@drawable/d7" android:duration="100" />
-    <item android:drawable="@drawable/d8" android:duration="100" />
-    <item android:drawable="@drawable/d9" android:duration="100" />
-    <item android:drawable="@drawable/d10" android:duration="100" />
-    <item android:drawable="@drawable/d11" android:duration="100" />
-    <item android:drawable="@drawable/d12" android:duration="100" />
-    <item android:drawable="@drawable/d11" android:duration="100" />
-    <item android:drawable="@drawable/d10" android:duration="100" />
-    <item android:drawable="@drawable/d9" android:duration="100" />
-    <item android:drawable="@drawable/d8" android:duration="100" />
-    <item android:drawable="@drawable/d7" android:duration="100" />
-    <item android:drawable="@drawable/d6" android:duration="100" />
-    <item android:drawable="@drawable/d5" android:duration="100" />
-    <item android:drawable="@drawable/d4" android:duration="100" />
-    <item android:drawable="@drawable/d3" android:duration="100" />
-    <item android:drawable="@drawable/d2" android:duration="100" />
+    <item android:drawable="@drawable/t1" android:duration="100" />
+    <item android:drawable="@drawable/t2" android:duration="100" />
+    <item android:drawable="@drawable/t3" android:duration="100" />
+    <item android:drawable="@drawable/t4" android:duration="100" />
+    <item android:drawable="@drawable/t5" android:duration="100" />
+    <item android:drawable="@drawable/t6" android:duration="100" />
+    <item android:drawable="@drawable/t7" android:duration="100" />
+    <item android:drawable="@drawable/t8" android:duration="100" />
+    <item android:drawable="@drawable/t9" android:duration="100" />
+    <item android:drawable="@drawable/t10" android:duration="100" />
+    <item android:drawable="@drawable/t11" android:duration="100" />
 
 </animation-list>

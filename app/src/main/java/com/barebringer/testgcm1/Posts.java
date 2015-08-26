@@ -122,20 +122,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        f = 0;
-        finish();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        f = 0;
-        finish();
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();

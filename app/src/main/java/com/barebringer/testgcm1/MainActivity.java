@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.Image;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import static com.barebringer.testgcm1.CommonUtilities.SERVER_URL;
@@ -40,17 +44,28 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    AnimationDrawable anim;
     ImageView gif;
+    Runnable r=new Runnable() {
+        @Override
+        public void run() {
+            long time=System.currentTimeMillis();
+            while(System.currentTimeMillis()<time+1200);
+            Intent i = new Intent(MainActivity.this, Author.class);
+            finish();
+            startActivity(i);
+        }
+    };
+    Thread t=new Thread(r);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
         SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        gif = (ImageView) findViewById(R.id.imagegif);
+        gif=(ImageView)findViewById(R.id.imagegif);
         gif.setBackgroundResource(R.drawable.animator);
-        AnimationDrawable anim = (AnimationDrawable) gif.getBackground();
-        anim.start();
+        anim = (AnimationDrawable) gif.getBackground();
         SharedPreferences.Editor editor = store.edit();
         editor.putString("temp", null);
         String tag = "STUDENT-/BTECH-/2-/CSE-/";
@@ -66,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void enter(View v) {
-        Intent i = new Intent(this, Author.class);
-        startActivity(i);
+            anim.start();
+            t.start();
     }
 }

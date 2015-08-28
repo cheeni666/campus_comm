@@ -57,30 +57,28 @@ public class NITpost extends Fragment {
     Button yes, no;
     ArrayAdapter cheenisAdapter;
 
-    boolean jsonhandlerfinish=false;
     int update;
 
     ListView cheenisListView;
     SwipeRefreshLayout swipeRefreshLayout;
-    ArrayList<String> posts = new ArrayList<String>(),refreshmes=new ArrayList<>();
+    ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tempjson;
 
-    int flag = 1,process=0;
+    int flag = 1, process = 0;
     String temp;
 
-    Handler toast=new Handler(){
+    Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(getActivity(),"Loading",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Loading", Toast.LENGTH_SHORT).show();
         }
     };
     Handler jsonhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
 
-            if(update==1)cheenisAdapter.insert(tempjson.toString(), 0);
-            if(update==-1)cheenisAdapter.insert(tempjson.toString(),cheenisAdapter.getCount());
-            jsonhandlerfinish=true;
+            if (update == 1) cheenisAdapter.insert(tempjson.toString(), 0);
+            if (update == -1) cheenisAdapter.insert(tempjson.toString(), cheenisAdapter.getCount());
 
         }
     };
@@ -115,6 +113,7 @@ public class NITpost extends Fragment {
             }
         }
     };
+    int old_id = 0;
     Thread t = new Thread(r);
 
     @Override
@@ -135,7 +134,7 @@ public class NITpost extends Fragment {
         cheenisListView = (ListView) v.findViewById(R.id.listView);
         cheenisAdapter = new CustomAdapter(getActivity(), posts);
         cheenisListView.setAdapter(cheenisAdapter);
-        View footerView =  ((LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
+        View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
         cheenisListView.addFooterView(footerView);
 
         new AsyncTask<Void, Void, String>() {
@@ -170,30 +169,31 @@ public class NITpost extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        if(process==1)return "";
+                        if (process == 1) return "";
                         toast.sendEmptyMessage(0);
-                        process=1;
-                        update=-1;
+                        process = 1;
+                        update = -1;
                         String msg = "";
                         String serverUrl = NEW_URL;
-                        MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                        SQLiteDatabase db = d.getDB();
-                        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " ASC;";
-                        Cursor c = db.rawQuery(query, null);
-                        //Move to the first row in your results
-                        c.moveToFirst();
-                        db.close();
-                        int lat_id=0;
-                        if(c.getCount()!=0){
-                            lat_id=c.getInt(c.getColumnIndex("_id"));
+                        if (old_id == 0) {
+                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
+                            SQLiteDatabase db = d.getDB();
+                            String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " ASC;";
+                            Cursor c = db.rawQuery(query, null);
+                            //Move to the first row in your results
+                            c.moveToFirst();
+                            db.close();
+                            old_id = 0;
+                            if (c.getCount() != 0) {
+                                old_id = c.getInt(c.getColumnIndex("_id"));
+                            } else return "";
                         }
-                        else return "";
                         Map<String, String> paramss = new HashMap<String, String>();
-                        JSONObject jsonObject=new JSONObject();
+                        JSONObject jsonObject = new JSONObject();
                         try {
                             jsonObject.put("action_id", "3");
-                            jsonObject.put("oldest_msg_id",lat_id+"");
-                            jsonObject.put("no_of_msgs","10");
+                            jsonObject.put("oldest_msg_id", old_id + "");
+                            jsonObject.put("no_of_msgs", "20");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -227,7 +227,7 @@ public class NITpost extends Fragment {
 
                     @Override
                     protected void onPostExecute(String msg) {
-                        process=0;
+                        process = 0;
                     }
                 }.execute(null, null, null);
             }
@@ -240,7 +240,7 @@ public class NITpost extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        update=1;
+                        update = 1;
                         String msg = "";
                         String serverUrl = NEW_URL;
                         MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
@@ -250,16 +250,15 @@ public class NITpost extends Fragment {
                         //Move to the first row in your results
                         c.moveToFirst();
                         db.close();
-                        int lat_id=0;
-                       if(c.getCount()!=0){
-                           lat_id=c.getInt(c.getColumnIndex("_id"));
-                       }
+                        int lat_id = 0;
+                        if (c.getCount() != 0) {
+                            lat_id = c.getInt(c.getColumnIndex("_id"));
+                        }
                         Map<String, String> paramss = new HashMap<String, String>();
-                        JSONObject jsonObject=new JSONObject();
+                        JSONObject jsonObject = new JSONObject();
                         try {
                             jsonObject.put("action_id", "2");
-                            jsonObject.put("latest_msg_id",lat_id+"");
-                            jsonObject.put("no_of_msgs","10");
+                            jsonObject.put("latest_msg_id", lat_id + "");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -348,13 +347,24 @@ public class NITpost extends Fragment {
 
         public String newmes();
     }
-    public void clear(){
-        MyDBHandler dbHandler=new MyDBHandler(getActivity(),null,null,1);
-        for(int i=0;i<refreshmes.size();i++){
+
+    public void clear() {
+        MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
+        for (int i = 0; i < refreshmes.size(); i++) {
             dbHandler.addName(refreshmes.get(i));
         }
-        refreshmes=new ArrayList<>();
+        refreshmes = new ArrayList<>();
     }
+    public void clearDB() {
+        MyDBHandler db=new MyDBHandler(getActivity(),null,null,1);
+        SQLiteDatabase dj=db.getDB();
+        String query = "DELETE FROM " + "posts" + " WHERE 1;";
+        dj.execSQL(query);
+        dj.close();
+        db.close();
+        refreshmes = new ArrayList<>();
+    }
+
     private void post(String endpoint, Map<String, String> params)
             throws IOException {
 
@@ -395,24 +405,27 @@ public class NITpost extends Fragment {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence="no_of_msgs";
+            CharSequence charSequence = "no_of_msgs";
 
-            String line ;
+            String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    if(line.contains(charSequence))
+                    if (line.contains(charSequence))
                         break;
                 }
-                JSONObject js=new JSONObject(line);
-                int l=Integer.parseInt(js.getString("no_of_msgs"));
-                JSONArray jsonArray=new JSONArray(js.get("messages").toString());
-                refreshmes=new ArrayList<>();
-                for(int i=0;i<l;i++){
-                    tempjson=jsonArray.getJSONObject(i);
+                JSONObject js = new JSONObject(line);
+                int l = Integer.parseInt(js.getString("no_of_msgs"));
+                JSONArray jsonArray = new JSONArray(js.get("messages").toString());
+                refreshmes = new ArrayList<>();
+                int i=0;
+                if(l>50){
+                    i=l-20;
+                    clearDB();
+                }
+                for (; i < l; i++) {
+                    tempjson = jsonArray.getJSONObject(i);
                     refreshmes.add(tempjson.toString());
-                    jsonhandlerfinish=false;
                     jsonhandler.sendEmptyMessage(0);
-                    while(!jsonhandlerfinish);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -431,7 +444,14 @@ public class NITpost extends Fragment {
                 conn.disconnect();
             }
         }
-        if(update==1)clear();
+        if(update==-1){
+            try {
+                old_id=Integer.parseInt(tempjson.getString("msg_id"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (update == 1) clear();
     }
 
 }

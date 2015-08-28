@@ -67,6 +67,68 @@ public class NITpost extends Fragment {
     int flag = 1, process = 0;
     String temp;
 
+    Handler clearDB = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            MyDBHandler db = new MyDBHandler(getActivity(), null, null, 1);
+            SQLiteDatabase dj = db.getDB();
+            String query = "DELETE FROM " + "posts" + " WHERE 1;";
+            dj.execSQL(query);
+            dj.close();
+            db.close();
+        }
+    };
+    Handler latest = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... params) {
+                    update = 1;
+                    String msg = "";
+                    String serverUrl = NEW_URL;
+                    Map<String, String> paramss = new HashMap<String, String>();
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("action_id", "2");
+                        jsonObject.put("latest_msg_id", lat_id);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    paramss.put("json", jsonObject.toString());
+                    long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+                    for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                        Log.d(TAG, "Attempt #" + i + " to register");
+                        try {
+                            posta(serverUrl, paramss);
+                            return msg;
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                            if (i == MAX_ATTEMPTS) {
+                                break;
+                            }
+                            try {
+                                Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
+                                Thread.sleep(backoff);
+                            } catch (InterruptedException e1) {
+                                // Activity finished before we complete - exit.
+                                Log.d(TAG, "Thread interrupted: abort remaining retries!");
+                                Thread.currentThread().interrupt();
+                                return msg;
+                            }
+                            // increase backoff exponentially
+                            backoff *= 2;
+                        }
+                    }
+                    return msg;
+                }
+
+                @Override
+                protected void onPostExecute(String msg) {
+                }
+            }.execute(null, null, null);
+        }
+    };
     Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -77,7 +139,10 @@ public class NITpost extends Fragment {
         @Override
         public void handleMessage(Message msg) {
 
-            if (update == 1) cheenisAdapter.insert(tempjson.toString(), 0);
+            if (update == 1) {
+                cheenisAdapter = new CustomAdapter(getActivity(), refreshmes);
+                cheenisListView.setAdapter(cheenisAdapter);
+            }
             if (update == -1) cheenisAdapter.insert(tempjson.toString(), cheenisAdapter.getCount());
 
         }
@@ -114,6 +179,7 @@ public class NITpost extends Fragment {
         }
     };
     int old_id = 0;
+    String lat_id = new String();
     Thread t = new Thread(r);
 
     @Override
@@ -202,7 +268,7 @@ public class NITpost extends Fragment {
                         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                             Log.d(TAG, "Attempt #" + i + " to register");
                             try {
-                                post(serverUrl, paramss);
+                                posta(serverUrl, paramss);
                                 return msg;
                             } catch (IOException e) {
                                 Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
@@ -240,25 +306,13 @@ public class NITpost extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        update = 1;
+                        update = 2;
                         String msg = "";
                         String serverUrl = NEW_URL;
-                        MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                        SQLiteDatabase db = d.getDB();
-                        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
-                        Cursor c = db.rawQuery(query, null);
-                        //Move to the first row in your results
-                        c.moveToFirst();
-                        db.close();
-                        int lat_id = 0;
-                        if (c.getCount() != 0) {
-                            lat_id = c.getInt(c.getColumnIndex("_id"));
-                        }
                         Map<String, String> paramss = new HashMap<String, String>();
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("action_id", "2");
-                            jsonObject.put("latest_msg_id", lat_id + "");
+                            jsonObject.put("action_id", "4");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -267,7 +321,7 @@ public class NITpost extends Fragment {
                         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                             Log.d(TAG, "Attempt #" + i + " to register");
                             try {
-                                post(serverUrl, paramss);
+                                posta(serverUrl, paramss);
                                 return msg;
                             } catch (IOException e) {
                                 Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
@@ -295,6 +349,7 @@ public class NITpost extends Fragment {
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }.execute(null, null, null);
+
             }
         });
         yes.setOnClickListener(new View.OnClickListener() {
@@ -355,17 +410,8 @@ public class NITpost extends Fragment {
         }
         refreshmes = new ArrayList<>();
     }
-    public void clearDB() {
-        MyDBHandler db=new MyDBHandler(getActivity(),null,null,1);
-        SQLiteDatabase dj=db.getDB();
-        String query = "DELETE FROM " + "posts" + " WHERE 1;";
-        dj.execSQL(query);
-        dj.close();
-        db.close();
-        refreshmes = new ArrayList<>();
-    }
 
-    private void post(String endpoint, Map<String, String> params)
+    private void posta(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;
@@ -405,7 +451,7 @@ public class NITpost extends Fragment {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "no_of_msgs";
+            CharSequence charSequence = "msg";
 
             String line;
             try {
@@ -414,19 +460,19 @@ public class NITpost extends Fragment {
                         break;
                 }
                 JSONObject js = new JSONObject(line);
-                int l = Integer.parseInt(js.getString("no_of_msgs"));
-                JSONArray jsonArray = new JSONArray(js.get("messages").toString());
-                refreshmes = new ArrayList<>();
-                int i=0;
-                if(l>50){
-                    i=l-20;
-                    clearDB();
-                }
-                for (; i < l; i++) {
-                    tempjson = jsonArray.getJSONObject(i);
-                    refreshmes.add(tempjson.toString());
-                    jsonhandler.sendEmptyMessage(0);
-                }
+                if (update != 2) {
+                    if (update == 1) clearDB.sendEmptyMessage(0);
+                    int l = Integer.parseInt(js.getString("no_of_msgs"));
+                    JSONArray jsonArray = new JSONArray(js.get("messages").toString());
+                    refreshmes = new ArrayList<>();
+                    int i = 0;
+                    for (; i < l; i++) {
+                        tempjson = jsonArray.getJSONObject(i);
+                        refreshmes.add(tempjson.toString());
+                        if (update == -1) jsonhandler.sendEmptyMessage(0);
+                    }
+                    if (update == 1) jsonhandler.sendEmptyMessage(0);
+                } else lat_id = js.getString("latest_id");
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -444,14 +490,20 @@ public class NITpost extends Fragment {
                 conn.disconnect();
             }
         }
-        if(update==-1){
+        if (update == -1) {
             try {
-                old_id=Integer.parseInt(tempjson.getString("msg_id"));
+                old_id = Integer.parseInt(tempjson.getString("msg_id"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         if (update == 1) clear();
+        if (update == 2) {
+            int templar = Integer.parseInt(lat_id);
+            templar = templar - 20;
+            lat_id = templar + "";
+            latest.sendEmptyMessage(0);
+        }
     }
 
 }

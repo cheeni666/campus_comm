@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:isScrollContainer="false"
     android:orientation="vertical"
-    android:background="#cecfce">
+    android:background="@drawable/backy">
 
 
     <TextView
@@ -75,12 +75,11 @@
         android:layout_marginRight="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin" />
     <io.codetail.widget.RevealFrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:isScrollContainer="false"
         android:layout_alignBottom="@+id/action_button"
-        android:layout_alignParentLeft="true"
-        >
+        android:layout_alignParentLeft="true">
 
         <ListView
             android:layout_width="200dp"
@@ -88,12 +87,13 @@
             android:layout_height="250dp"
             android:id="@+id/listView2"
             android:visibility="invisible"
-            android:background="@drawable/shadow"
             android:headerDividersEnabled="false"
             android:elevation="5dp"
             android:isScrollContainer="false"
             android:drawSelectorOnTop="false"
-            android:translationZ="5dp"/>
+            android:translationZ="5dp"
+            android:background="@drawable/shadow"
+            android:alpha=".75" />
         <!-- Transform view -->
 
     </io.codetail.widget.RevealFrameLayout>
@@ -121,5 +121,8 @@
         android:elevation="5dp"
         android:layout_margin="5dp"
         android:background="@drawable/shadow"
-        android:clickable="false" />
+        android:clickable="false"
+        android:alpha=".75"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp" />
 </RelativeLayout>

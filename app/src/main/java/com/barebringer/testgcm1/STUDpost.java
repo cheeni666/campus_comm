@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import com.konifar.fab_transformation.FabTransformation;
 import com.software.shell.fab.ActionButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,14 +44,14 @@ import java.util.Random;
 import static com.barebringer.testgcm1.CommonUtilities.POST_URL;
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
 import static com.barebringer.testgcm1.CommonUtilities.level1;
-import static com.barebringer.testgcm1.CommonUtilities.level2;
+import static com.barebringer.testgcm1.CommonUtilities.level2_1;
+import static com.barebringer.testgcm1.CommonUtilities.level2_2;
 import static com.barebringer.testgcm1.CommonUtilities.level3;
-import static com.barebringer.testgcm1.CommonUtilities.level4;
 
 public class STUDpost extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    String username;
+    String username,dispstring=new String();
     View v;
     Button send;
     EditText mes;
@@ -56,14 +59,22 @@ public class STUDpost extends Fragment {
     ArrayList<String> tags = new ArrayList<String>();
     ArrayAdapter tagAdapter;
     ListView l;
-    String tagString = new String();
+    JSONObject polosjson=new JSONObject();
+    String polos=new String();
     Button b;
     int level = 1;
-    int done=0,temp=0;
+    boolean btech, mtech;
+    int done = 0, temp = 0;
     TextView goh;
-    private static final int MAX_ATTEMPTS = 5;
+    private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
+    Handler failtoast = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,25 +101,71 @@ public class STUDpost extends Fragment {
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(done==1) Toast.makeText(getActivity(),"Clear Tags First",Toast.LENGTH_SHORT).show();
-                if (position != tags.size() - 1&&done==0) {
+                if (done == 1)
+                    Toast.makeText(getActivity(), "Clear Tags First (Long click)", Toast.LENGTH_SHORT).show();
+                if (position != tags.size() - 1 && done == 0) {
                     ImageView kilua = (ImageView) view.findViewById(R.id.imageViews);
-                    if(kilua.getBaseline()!=2){
+                    if (kilua.getBaseline() != 2) {
                         kilua.setBaseline(2);
                         kilua.setBackgroundColor(Color.parseColor("#000000"));
-                        tagString += parent.getItemAtPosition(position);
-                        goh.setText(tagString);
+                        polos+=parent.getItemAtPosition(position)+",";
+                        dispstring+=parent.getItemAtPosition(position).toString() + ", ";
+                        goh.setText(dispstring);
+                        if (parent.getItemAtPosition(position).toString().equals("btech"))
+                            btech = true;
+                        if (parent.getItemAtPosition(position).toString().equals("mtech"))
+                            mtech = true;
                         temp++;
+                        if(btech&&mtech){
+                            done = 1;
+                            FabTransformation.with(actionButton)
+                                    .transformFrom(l);
+                            b.setAlpha(0);
+                            b.setEnabled(false);
+                            try {
+                                polosjson.put("degree", polos);
+                                polosjson.put("year","all,");
+                                polosjson.put("dept","all,");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                } else if (position == tags.size() - 1&&done==0&&temp!=0) {
-                    temp=0;
+                } else if (position == tags.size() - 1 && done == 0 && temp != 0) {
+                    if (level == 1) {
+                        if (btech || mtech) {
+                            try {
+                                polosjson.put("degree", polos);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (btech) tags = level2_1;
+                            if (mtech) tags = level2_2;
+                        }
+                    }
+                    if (level == 2) {
+
+                        try {
+                            polosjson.put("year", polos);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        tags = level3;
+
+                    }
+                    if (level == 3) {
+
+                        try {
+                            polosjson.put("dept", polos);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    polos = new String();
+                    temp = 0;
                     level++;
-                    tagString += "/";
-                    if (level == 2) tags = level2;
-                    if (level == 3) tags = level3;
-                    if (level == 4) tags = level4;
-                    if (level >= 5) {
-                        done=1;
+                    if (level >= 4) {
+                        done = 1;
                         FabTransformation.with(actionButton)
                                 .transformFrom(l);
                         b.setAlpha(0);
@@ -116,20 +173,25 @@ public class STUDpost extends Fragment {
                     }
                     tagAdapter = new Adapter(getActivity(), tags);
                     l.setAdapter(tagAdapter);
-                    goh.setText(tagString);
+                    dispstring+="/";
+                    goh.setText(dispstring);
                 }
             }
         });
         actionButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                tags=level1;
-                tagString=new String();
-                level=1;
-                done=0;
+                tags = level1;
+                polos = new String();
+                polosjson=new JSONObject();
+                btech = false;
+                mtech = false;
+                dispstring=new String();
+                level = 1;
+                done = 0;
                 tagAdapter = new Adapter(getActivity(), tags);
                 l.setAdapter(tagAdapter);
-                goh.setText(tagString);
+                goh.setText(dispstring);
                 return true;
             }
         });
@@ -155,27 +217,38 @@ public class STUDpost extends Fragment {
         send = (Button) v.findViewById(R.id.send2);
         mes = (EditText) v.findViewById(R.id.editText2);
         username = mListener.getusername2();
+        if (!username.equals("director")) {
+            actionButton.setEnabled(false);
+            done=1;
+            try {
+                polosjson.put("degree", "all,");
+                polos=new String();
+                polos+="all,";
+                polosjson.put("year", polos);
+                polosjson.put("dept", polos);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(done==0)Toast.makeText(getActivity(),"Tags Incomplete",Toast.LENGTH_SHORT).show();
-                if(done==1){
+                if (done == 0)
+                    Toast.makeText(getActivity(), "Tags Incomplete", Toast.LENGTH_SHORT).show();
+                if (done == 1) {
                     final String msg = mes.getText().toString();
                     if (msg == null || msg.equals("")) return;
                     mes.setText("");
                     JSONObject jsonObject = new JSONObject();
-                    Calendar calendar = Calendar.getInstance();
                     try {
                         jsonObject.put("message", msg);
-                        jsonObject.put("tags", tagString);
+                        jsonObject.put("tags", polosjson.toString());
                         jsonObject.put("username", username);
-                        jsonObject.put("timestamp", calendar.get(Calendar.YEAR) + ":" + calendar.get(Calendar.MONTH) + ":" + calendar.get(Calendar.DAY_OF_MONTH)
-                                + ":" + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     final String k = jsonObject.toString();
-                    new AsyncTask<Void, Void, String>() {
+                     new AsyncTask<Void, Void, String>() {
                         @Override
                         protected String doInBackground(Void... params) {
                             String serverUrl = POST_URL;
@@ -189,6 +262,7 @@ public class STUDpost extends Fragment {
                                     return msg;
                                 } catch (IOException e) {
                                     Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                                    failtoast.sendEmptyMessage(0);
                                     if (i == MAX_ATTEMPTS) {
                                         break;
                                     }

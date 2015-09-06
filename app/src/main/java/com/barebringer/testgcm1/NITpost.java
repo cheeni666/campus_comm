@@ -46,7 +46,7 @@ import static com.barebringer.testgcm1.CommonUtilities.TAG;
 
 public class NITpost extends Fragment {
 
-    private static final int MAX_ATTEMPTS = 3;
+    private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
 
@@ -98,12 +98,12 @@ public class NITpost extends Fragment {
                     paramss.put("json", jsonObject.toString());
                     long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                     for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                        Log.d(TAG, "Attempt #" + i + " to register");
                         try {
                             posta(serverUrl, paramss);
                             return msg;
                         } catch (IOException e) {
                             Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                            failtoast.sendEmptyMessage(0);
                             if (i == MAX_ATTEMPTS) {
                                 break;
                             }
@@ -133,6 +133,12 @@ public class NITpost extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getActivity(), "Loading", Toast.LENGTH_SHORT).show();
+        }
+    };
+    Handler failtoast = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
         }
     };
     Handler jsonhandler = new Handler() {
@@ -252,7 +258,10 @@ public class NITpost extends Fragment {
                             old_id = 0;
                             if (c.getCount() != 0) {
                                 old_id = c.getInt(c.getColumnIndex("_id"));
-                            } else return "";
+                            } else {
+                                failtoast.sendEmptyMessage(0);
+                                return "";
+                            }
                         }
                         Map<String, String> paramss = new HashMap<String, String>();
                         JSONObject jsonObject = new JSONObject();
@@ -272,6 +281,7 @@ public class NITpost extends Fragment {
                                 return msg;
                             } catch (IOException e) {
                                 Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                                failtoast.sendEmptyMessage(0);
                                 if (i == MAX_ATTEMPTS) {
                                     break;
                                 }
@@ -325,6 +335,7 @@ public class NITpost extends Fragment {
                                 return msg;
                             } catch (IOException e) {
                                 Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                                failtoast.sendEmptyMessage(0);
                                 if (i == MAX_ATTEMPTS) {
                                     break;
                                 }
@@ -415,6 +426,7 @@ public class NITpost extends Fragment {
             throws IOException {
 
         URL url;
+        boolean wak=false;
         try {
             url = new URL(endpoint);
         } catch (MalformedURLException e) {
@@ -455,6 +467,7 @@ public class NITpost extends Fragment {
 
             String line;
             try {
+                wak=true;
                 while ((line = reader.readLine()) != null) {
                     if (line.contains(charSequence))
                         break;
@@ -490,20 +503,23 @@ public class NITpost extends Fragment {
                 conn.disconnect();
             }
         }
-        if (update == -1) {
-            try {
-                old_id = Integer.parseInt(tempjson.getString("msg_id"));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(wak){
+            if (update == -1) {
+                try {
+                    old_id = Integer.parseInt(tempjson.getString("msg_id"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (update == 1) clear();
+            if (update == 2) {
+                int templar = Integer.parseInt(lat_id);
+                templar = templar - 20;
+                lat_id = templar + "";
+                latest.sendEmptyMessage(0);
             }
         }
-        if (update == 1) clear();
-        if (update == 2) {
-            int templar = Integer.parseInt(lat_id);
-            templar = templar - 20;
-            lat_id = templar + "";
-            latest.sendEmptyMessage(0);
-        }
+        else failtoast.sendEmptyMessage(0);
     }
 
 }

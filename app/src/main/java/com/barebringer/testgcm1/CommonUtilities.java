@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public final class CommonUtilities {
 
     // give your server registration url here
-    static final String SERVER_URL = "http://0675f90f.ngrok.io/insertuser.php";
+    static final String SERVER_URL = "http://7d7c4990.ngrok.io/insertuser.php";
     static final String POST_URL = "http://0675f90f.ngrok.io/sendall.php";
     static final String NEW_URL = "http://0675f90f.ngrok.io/temp.php";
 
@@ -41,15 +41,15 @@ public final class CommonUtilities {
     }
 
     static ArrayList<String> level1=new ArrayList<String>(){
-        {add("STUDENT-");add("NEXT LEVEL");}
+        {add("btech");add("mtech");add("select year");}
     };
-    static ArrayList<String> level2=new ArrayList<String>(){
-        {add("BTECH-");add("MTECH-");add("NEXT LEVEL");}
+    static ArrayList<String> level2_2=new ArrayList<String>(){
+        {add("1");add("2");add("phd");add("select dept");}
+    };
+    static ArrayList<String> level2_1=new ArrayList<String>(){
+        {add("1");add("2");add("3");add("4");add("select dept");}
     };
     static ArrayList<String> level3=new ArrayList<String>(){
-        {add("1-");add("2-");add("3-");add("4-");add("5-");add("NEXT LEVEL");}
-    };
-    static ArrayList<String> level4=new ArrayList<String>(){
-        {add("ARCHI-");add("CHEMICAL-");add("CIVIL-");add("CSE-");add("ECE-");add("EEE-");add("ICE-");add("MECH-");add("META-");add("PROD-");add("DONE");}
+        {add("archi");add("chemical");add("civil");add("cse");add("ece");add("eee");add("ice");add("mech");add("meata");add("prod");add("done");}
     };
 }

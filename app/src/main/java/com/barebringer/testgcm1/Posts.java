@@ -55,10 +55,6 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        AudioManager m_amAudioManager;
-        m_amAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        m_amAudioManager.setMode(AudioManager.MODE_IN_CALL);
-        m_amAudioManager.setSpeakerphoneOn(false);
 
         username = store.getString("usertext", null);
         setContentView(R.layout.activity_posts);

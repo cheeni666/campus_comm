@@ -62,73 +62,12 @@ public class NITpost extends Fragment {
     ListView cheenisListView;
     SwipeRefreshLayout swipeRefreshLayout;
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
+    ArrayList<String> temporary;
     JSONObject tempjson;
 
-    int flag = 1, process = 0;
+    int flag = 1, process = 0,u;
     String temp;
 
-    Handler clearDB = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            MyDBHandler db = new MyDBHandler(getActivity(), null, null, 1);
-            SQLiteDatabase dj = db.getDB();
-            String query = "DELETE FROM " + "posts" + " WHERE 1;";
-            dj.execSQL(query);
-            dj.close();
-            db.close();
-        }
-    };
-    Handler latest = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            new AsyncTask<Void, Void, String>() {
-                @Override
-                protected String doInBackground(Void... params) {
-                    update = 1;
-                    String msg = "";
-                    String serverUrl = NEW_URL;
-                    Map<String, String> paramss = new HashMap<String, String>();
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("action_id", "2");
-                        jsonObject.put("latest_msg_id", lat_id);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    paramss.put("json", jsonObject.toString());
-                    long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                    for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                        try {
-                            posta(serverUrl, paramss);
-                            return msg;
-                        } catch (IOException e) {
-                            Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                            failtoast.sendEmptyMessage(0);
-                            if (i == MAX_ATTEMPTS) {
-                                break;
-                            }
-                            try {
-                                Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                                Thread.sleep(backoff);
-                            } catch (InterruptedException e1) {
-                                // Activity finished before we complete - exit.
-                                Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                                Thread.currentThread().interrupt();
-                                return msg;
-                            }
-                            // increase backoff exponentially
-                            backoff *= 2;
-                        }
-                    }
-                    return msg;
-                }
-
-                @Override
-                protected void onPostExecute(String msg) {
-                }
-            }.execute(null, null, null);
-        }
-    };
     Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -144,13 +83,11 @@ public class NITpost extends Fragment {
     Handler jsonhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
-            if (update == 1) {
-                cheenisAdapter = new CustomAdapter(getActivity(), refreshmes);
-                cheenisListView.setAdapter(cheenisAdapter);
+            if(update==1){
+                cheenisAdapter.insert(tempjson.toString(), 0);
             }
             if (update == -1) cheenisAdapter.insert(tempjson.toString(), cheenisAdapter.getCount());
-
+            u=0;
         }
     };
     Handler h = new Handler() {
@@ -184,8 +121,7 @@ public class NITpost extends Fragment {
             }
         }
     };
-    int old_id = 0;
-    String lat_id = new String();
+    int old_id = 0, new_id = 0;
     Thread t = new Thread(r);
 
     @Override
@@ -255,7 +191,6 @@ public class NITpost extends Fragment {
                             //Move to the first row in your results
                             c.moveToFirst();
                             db.close();
-                            old_id = 0;
                             if (c.getCount() != 0) {
                                 old_id = c.getInt(c.getColumnIndex("_id"));
                             } else {
@@ -264,15 +199,9 @@ public class NITpost extends Fragment {
                             }
                         }
                         Map<String, String> paramss = new HashMap<String, String>();
-                        JSONObject jsonObject = new JSONObject();
-                        try {
-                            jsonObject.put("action_id", "3");
-                            jsonObject.put("oldest_msg_id", old_id + "");
-                            jsonObject.put("no_of_msgs", "20");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        paramss.put("json", jsonObject.toString());
+                        paramss.put("oldest_msg_id", old_id + "");
+                        paramss.put("action_id", "3");
+                        paramss.put("no_of_msgs", "20");
                         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                             Log.d(TAG, "Attempt #" + i + " to register");
@@ -316,17 +245,23 @@ public class NITpost extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        update = 2;
+                        update = 1;
                         String msg = "";
                         String serverUrl = NEW_URL;
+                        MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
+                        SQLiteDatabase db = d.getDB();
+                        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+                        Cursor c = db.rawQuery(query, null);
+                        //Move to the first row in your results
+                        c.moveToFirst();
+                        db.close();
+                        if (c.getCount() != 0) {
+                            new_id = c.getInt(c.getColumnIndex("_id"));
+                        }
                         Map<String, String> paramss = new HashMap<String, String>();
                         JSONObject jsonObject = new JSONObject();
-                        try {
-                            jsonObject.put("action_id", "4");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        paramss.put("json", jsonObject.toString());
+                        paramss.put("action_id", "2");
+                        paramss.put("latest_msg_id", new_id + "");
                         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                             Log.d(TAG, "Attempt #" + i + " to register");
@@ -416,8 +351,17 @@ public class NITpost extends Fragment {
 
     public void clear() {
         MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
-        for (int i = 0; i < refreshmes.size(); i++) {
+        int sizeof=refreshmes.size();
+        for (int i = 0; i < sizeof; i++) {
             dbHandler.addName(refreshmes.get(i));
+            try {
+                tempjson=new JSONObject(refreshmes.get(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            u=1;
+            jsonhandler.sendEmptyMessage(0);
+            while(u==1);
         }
         refreshmes = new ArrayList<>();
     }
@@ -426,7 +370,7 @@ public class NITpost extends Fragment {
             throws IOException {
 
         URL url;
-        boolean wak=false;
+        boolean wak = false;
         try {
             url = new URL(endpoint);
         } catch (MalformedURLException e) {
@@ -463,29 +407,27 @@ public class NITpost extends Fragment {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "msg";
+            CharSequence charSequence = "no_of";
 
-            String line;
+            String line = "";
             try {
-                wak=true;
+                wak = true;
                 while ((line = reader.readLine()) != null) {
                     if (line.contains(charSequence))
                         break;
                 }
+                Log.d("check", line);
                 JSONObject js = new JSONObject(line);
-                if (update != 2) {
-                    if (update == 1) clearDB.sendEmptyMessage(0);
-                    int l = Integer.parseInt(js.getString("no_of_msgs"));
-                    JSONArray jsonArray = new JSONArray(js.get("messages").toString());
-                    refreshmes = new ArrayList<>();
-                    int i = 0;
-                    for (; i < l; i++) {
-                        tempjson = jsonArray.getJSONObject(i);
-                        refreshmes.add(tempjson.toString());
-                        if (update == -1) jsonhandler.sendEmptyMessage(0);
-                    }
-                    if (update == 1) jsonhandler.sendEmptyMessage(0);
-                } else lat_id = js.getString("latest_id");
+                int l = Integer.parseInt(js.getString("no_of_messages"));
+                if(l==0)return;
+                JSONArray jsonArray = new JSONArray(js.get("messages").toString());
+                refreshmes = new ArrayList<>();
+                int i = 0;
+                for (; i < l; i++) {
+                    tempjson = jsonArray.getJSONObject(i);
+                    refreshmes.add(tempjson.toString());
+                    if(update==-1)jsonhandler.sendEmptyMessage(0);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -503,7 +445,7 @@ public class NITpost extends Fragment {
                 conn.disconnect();
             }
         }
-        if(wak){
+        if (wak) {
             if (update == -1) {
                 try {
                     old_id = Integer.parseInt(tempjson.getString("msg_id"));
@@ -511,15 +453,10 @@ public class NITpost extends Fragment {
                     e.printStackTrace();
                 }
             }
-            if (update == 1) clear();
-            if (update == 2) {
-                int templar = Integer.parseInt(lat_id);
-                templar = templar - 20;
-                lat_id = templar + "";
-                latest.sendEmptyMessage(0);
+            if (update == 1){
+                clear();
             }
-        }
-        else failtoast.sendEmptyMessage(0);
+        } else failtoast.sendEmptyMessage(0);
     }
 
 }

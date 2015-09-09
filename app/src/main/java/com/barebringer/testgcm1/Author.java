@@ -76,17 +76,11 @@ public class Author extends Activity {
                 Log.i(TAG, "registering device (regId = " + regId + ")");
                 String serverUrl = SERVER_URL;
                 Map<String, String> paramss = new HashMap<String, String>();
-                JSONObject jsonObject=new JSONObject();
-                try {
-                    jsonObject.put("username",name);
-                    jsonObject.put("password",password);
-                    jsonObject.put("gcmid",regId);
-                    jsonObject.put("action_id","0");
-                    jsonObject.put("ad_id", t.getDeviceId());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                paramss.put("json", jsonObject.toString());
+                paramss.put("username", name);
+                paramss.put("password", password);
+                paramss.put("gcmid", regId);
+                paramss.put("action_id", "0");
+                paramss.put("ad_id", t.getDeviceId());
                 long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                 for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                     Log.d(TAG, "Attempt #" + i + " to register");

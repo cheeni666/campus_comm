@@ -55,15 +55,8 @@ public class CustomAdapter extends ArrayAdapter<String> {
             } else if (c.get(Calendar.DAY_OF_MONTH) != Integer.parseInt(date[2])) {
                 int t = c.get(Calendar.DAY_OF_MONTH) - Integer.parseInt(date[2]);
                 times.setText(t + " days ago");
-            } else if (c.get(Calendar.HOUR_OF_DAY) != Integer.parseInt(time[0])) {
-                int t = c.get(Calendar.HOUR_OF_DAY) - Integer.parseInt(time[0]);
-                times.setText(t + " hours ago");
-            } else if (c.get(Calendar.MINUTE) != Integer.parseInt(time[1])) {
-                int t = c.get(Calendar.MINUTE) - Integer.parseInt(time[1]);
-                times.setText(t + " minutes ago");
-            } else if (c.get(Calendar.SECOND) != Integer.parseInt(time[2])) {
-                int t = c.get(Calendar.SECOND) - Integer.parseInt(time[2]);
-                times.setText(t + " seconds ago");
+            } else{
+                times.setText("today");
             }
         } catch (JSONException e) {
             e.printStackTrace();

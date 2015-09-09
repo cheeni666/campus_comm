@@ -1,6 +1,8 @@
 package com.barebringer.testgcm1;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,8 +30,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -41,7 +46,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import static com.barebringer.testgcm1.CommonUtilities.POST_URL;
+import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
 import static com.barebringer.testgcm1.CommonUtilities.level1;
 import static com.barebringer.testgcm1.CommonUtilities.level2_1;
@@ -73,6 +78,12 @@ public class STUDpost extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
+        }
+    };
+    Handler stoast = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -124,7 +135,7 @@ public class STUDpost extends Fragment {
                             b.setEnabled(false);
                             try {
                                 polosjson.put("degree", polos);
-                                polosjson.put("year","all,");
+                                polosjson.put("year","1,2,3,4,phd,");
                                 polosjson.put("dept","all,");
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -239,26 +250,20 @@ public class STUDpost extends Fragment {
                     final String msg = mes.getText().toString();
                     if (msg == null || msg.equals("")) return;
                     mes.setText("");
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("message", msg);
-                        jsonObject.put("tags", polosjson.toString());
-                        jsonObject.put("username", username);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    final String k = jsonObject.toString();
                      new AsyncTask<Void, Void, String>() {
                         @Override
                         protected String doInBackground(Void... params) {
-                            String serverUrl = POST_URL;
+                            String serverUrl = NEW_URL;
                             Map<String, String> paramss = new HashMap<String, String>();
-                            paramss.put("message", k);
+                            paramss.put("action_id","0");
+                            paramss.put("message",msg);
+                            paramss.put("tags",polosjson.toString());
+                            paramss.put("sender",username);
                             long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                             for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                                 Log.d(TAG, "Attempt #" + i + " to register");
                                 try {
-                                    post(serverUrl, paramss);
+                                    posta(serverUrl, paramss);
                                     return msg;
                                 } catch (IOException e) {
                                     Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
@@ -310,7 +315,8 @@ public class STUDpost extends Fragment {
         public void logout2();
     }
 
-    private static void post(String endpoint, Map<String, String> params)
+
+    private void posta(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;
@@ -347,15 +353,40 @@ public class STUDpost extends Fragment {
             OutputStream out = conn.getOutputStream();
             out.write(bytes);
             out.close();
-            // handle the response
-            int status = conn.getResponseCode();
-            if (status != 200) {
-                throw new IOException("Post failed with error code " + status);
+            InputStream in = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            CharSequence charSequence = "status";
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    if(line.contains(charSequence))
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            try {
+                JSONObject js=new JSONObject(line);
+                if (js.get("status_code").equals("1")){
+                    stoast.sendEmptyMessage(0);
+                }
+                else failtoast.sendEmptyMessage(0);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         } finally {
             if (conn != null) {
                 conn.disconnect();
             }
         }
+
     }
 }

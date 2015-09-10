@@ -56,7 +56,7 @@ import static com.barebringer.testgcm1.CommonUtilities.level3;
 public class STUDpost extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    String username,dispstring=new String();
+    String username, dispstring = new String();
     View v;
     Button send;
     EditText mes;
@@ -64,8 +64,8 @@ public class STUDpost extends Fragment {
     ArrayList<String> tags = new ArrayList<String>();
     ArrayAdapter tagAdapter;
     ListView l;
-    JSONObject polosjson=new JSONObject();
-    String polos=new String();
+    JSONObject polosjson = new JSONObject();
+    String polos = new String();
     Button b;
     int level = 1;
     boolean btech, mtech;
@@ -119,15 +119,15 @@ public class STUDpost extends Fragment {
                     if (kilua.getBaseline() != 2) {
                         kilua.setBaseline(2);
                         kilua.setBackgroundColor(Color.parseColor("#000000"));
-                        polos+=parent.getItemAtPosition(position)+",";
-                        dispstring+=parent.getItemAtPosition(position).toString() + ", ";
+                        polos += parent.getItemAtPosition(position) + ",";
+                        dispstring += parent.getItemAtPosition(position).toString() + ", ";
                         goh.setText(dispstring);
                         if (parent.getItemAtPosition(position).toString().equals("btech"))
                             btech = true;
                         if (parent.getItemAtPosition(position).toString().equals("mtech"))
                             mtech = true;
                         temp++;
-                        if(btech&&mtech){
+                        if (btech && mtech) {
                             done = 1;
                             FabTransformation.with(actionButton)
                                     .transformFrom(l);
@@ -135,8 +135,8 @@ public class STUDpost extends Fragment {
                             b.setEnabled(false);
                             try {
                                 polosjson.put("degree", polos);
-                                polosjson.put("year","1,2,3,4,phd,");
-                                polosjson.put("dept","all,");
+                                polosjson.put("year", "1,2,3,4,phd,");
+                                polosjson.put("dept", "all,");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -184,7 +184,7 @@ public class STUDpost extends Fragment {
                     }
                     tagAdapter = new Adapter(getActivity(), tags);
                     l.setAdapter(tagAdapter);
-                    dispstring+="/";
+                    dispstring += "/";
                     goh.setText(dispstring);
                 }
             }
@@ -194,10 +194,10 @@ public class STUDpost extends Fragment {
             public boolean onLongClick(View v) {
                 tags = level1;
                 polos = new String();
-                polosjson=new JSONObject();
+                polosjson = new JSONObject();
                 btech = false;
                 mtech = false;
-                dispstring=new String();
+                dispstring = new String();
                 level = 1;
                 done = 0;
                 tagAdapter = new Adapter(getActivity(), tags);
@@ -230,11 +230,11 @@ public class STUDpost extends Fragment {
         username = mListener.getusername2();
         if (!username.equals("director")) {
             actionButton.setEnabled(false);
-            done=1;
+            done = 1;
             try {
                 polosjson.put("degree", "all,");
-                polos=new String();
-                polos+="all,";
+                polos = new String();
+                polos += "all,";
                 polosjson.put("year", polos);
                 polosjson.put("dept", polos);
             } catch (JSONException e) {
@@ -250,15 +250,15 @@ public class STUDpost extends Fragment {
                     final String msg = mes.getText().toString();
                     if (msg == null || msg.equals("")) return;
                     mes.setText("");
-                     new AsyncTask<Void, Void, String>() {
+                    new AsyncTask<Void, Void, String>() {
                         @Override
                         protected String doInBackground(Void... params) {
                             String serverUrl = NEW_URL;
                             Map<String, String> paramss = new HashMap<String, String>();
-                            paramss.put("action_id","0");
-                            paramss.put("message",msg);
-                            paramss.put("tags",polosjson.toString());
-                            paramss.put("sender",username);
+                            paramss.put("action_id", "0");
+                            paramss.put("message", msg);
+                            paramss.put("tags", polosjson.toString());
+                            paramss.put("sender", username);
                             long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                             for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                                 Log.d(TAG, "Attempt #" + i + " to register");
@@ -359,7 +359,7 @@ public class STUDpost extends Fragment {
             String line = null;
             try {
                 while ((line = reader.readLine()) != null) {
-                    if(line.contains(charSequence))
+                    if (line.contains(charSequence))
                         break;
                 }
             } catch (IOException e) {
@@ -372,11 +372,10 @@ public class STUDpost extends Fragment {
                 }
             }
             try {
-                JSONObject js=new JSONObject(line);
-                if (js.get("status_code").equals("1")){
+                JSONObject js = new JSONObject(line);
+                if (js.get("status_code").equals("1")) {
                     stoast.sendEmptyMessage(0);
-                }
-                else failtoast.sendEmptyMessage(0);
+                } else failtoast.sendEmptyMessage(0);
 
             } catch (JSONException e) {
                 e.printStackTrace();

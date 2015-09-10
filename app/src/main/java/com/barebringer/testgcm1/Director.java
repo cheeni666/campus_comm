@@ -1,7 +1,9 @@
 package com.barebringer.testgcm1;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -38,11 +40,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import static com.barebringer.testgcm1.CommonUtilities.start3;
 import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
-import static com.barebringer.testgcm1.CommonUtilities.start1;
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
 
-public class NITpost extends Fragment {
+public class Director extends Fragment {
 
     private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
@@ -62,8 +64,6 @@ public class NITpost extends Fragment {
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tempjson;
 
-    int process = 0;
-
     Handler mtoast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -82,6 +82,7 @@ public class NITpost extends Fragment {
             Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
         }
     };
+
     Handler handler = new Handler() {
         @Override
         public synchronized void handleMessage(Message msg) {
@@ -90,8 +91,6 @@ public class NITpost extends Fragment {
                 public void run() {
                     cheenisAdapter = new CustomAdapter(getActivity(), posts);
                     cheenisListView.setAdapter(cheenisAdapter);
-                    if (update == -1)
-                        cheenisListView.setSelection(posts.size() - refreshmes.size());
                 }
             });
         }
@@ -106,27 +105,25 @@ public class NITpost extends Fragment {
         if (container == null) {
             return null;
         }
-        v = inflater.inflate(R.layout.fragment_nitpost, container, false);
-        status = (TextView) v.findViewById(R.id.header1);
-        yes = (Button) v.findViewById(R.id.yes1);
-        no = (Button) v.findViewById(R.id.no1);
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
-        username = mListener.getusername1();
+        v = inflater.inflate(R.layout.fragment_director, container, false);
+        status = (TextView) v.findViewById(R.id.header1_2);
+        yes = (Button) v.findViewById(R.id.yes1_2);
+        no = (Button) v.findViewById(R.id.no1_2);
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout_2);
+        username = mListener.getusername3();
         status.setText(username);
 
-        cheenisListView = (ListView) v.findViewById(R.id.listView);
+        cheenisListView = (ListView) v.findViewById(R.id.listView_2);
         cheenisAdapter = new CustomAdapter(getActivity(), posts);
         cheenisListView.setAdapter(cheenisAdapter);
-        View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
-        cheenisListView.addFooterView(footerView);
 
-        if (start1) {
+        if (start3) {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
                     MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
                     SQLiteDatabase db = d.getDB();
-                    String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+                    String query = "SELECT * FROM " + "dposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
                     Cursor c = db.rawQuery(query, null);
                     //Move to the first row in your results
                     c.moveToFirst();
@@ -145,75 +142,8 @@ public class NITpost extends Fragment {
                 protected void onPostExecute(String msg) {
                 }
             }.execute(null, null, null);
-            start1 = false;
+            start3 = false;
         }
-
-        footerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AsyncTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackground(Void... params) {
-                        if (process == 1) return "";
-                        toast.sendEmptyMessage(0);
-                        process = 1;
-                        update = -1;
-                        String msg = "";
-                        String serverUrl = NEW_URL;
-                        if (old_id == 0) {
-                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                            SQLiteDatabase db = d.getDB();
-                            String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " ASC;";
-                            Cursor c = db.rawQuery(query, null);
-                            //Move to the first row in your results
-                            c.moveToFirst();
-                            db.close();
-                            if (c.getCount() != 0) {
-                                old_id = c.getInt(c.getColumnIndex("_id"));
-                            } else {
-                                failtoast.sendEmptyMessage(0);
-                                return "";
-                            }
-                        }
-                        Map<String, String> paramss = new HashMap<String, String>();
-                        paramss.put("oldest_msg_id", old_id + "");
-                        paramss.put("action_id", "3");
-                        paramss.put("no_of_msgs", "20");
-                        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                            Log.d(TAG, "Attempt #" + i + " to register");
-                            try {
-                                posta(serverUrl, paramss);
-                                return msg;
-                            } catch (IOException e) {
-                                Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                                failtoast.sendEmptyMessage(0);
-                                if (i == MAX_ATTEMPTS) {
-                                    break;
-                                }
-                                try {
-                                    Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                                    Thread.sleep(backoff);
-                                } catch (InterruptedException e1) {
-                                    // Activity finished before we complete - exit.
-                                    Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                                    Thread.currentThread().interrupt();
-                                    return msg;
-                                }
-                                // increase backoff exponentially
-                                backoff *= 2;
-                            }
-                        }
-                        return msg;
-                    }
-
-                    @Override
-                    protected void onPostExecute(String msg) {
-                        process = 0;
-                    }
-                }.execute(null, null, null);
-            }
-        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -227,7 +157,7 @@ public class NITpost extends Fragment {
                         String serverUrl = NEW_URL;
                         MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
                         SQLiteDatabase db = d.getDB();
-                        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+                        String query = "SELECT * FROM " + "dposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
                         Cursor c = db.rawQuery(query, null);
                         //Move to the first row in your results
                         c.moveToFirst();
@@ -238,7 +168,6 @@ public class NITpost extends Fragment {
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("action_id", "2");
                         paramss.put("latest_msg_id", new_id + "");
-                        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
                         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
                             Log.d(TAG, "Attempt #" + i + " to register");
                             try {
@@ -250,17 +179,6 @@ public class NITpost extends Fragment {
                                 if (i == MAX_ATTEMPTS) {
                                     break;
                                 }
-                                try {
-                                    Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                                    Thread.sleep(backoff);
-                                } catch (InterruptedException e1) {
-                                    // Activity finished before we complete - exit.
-                                    Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                                    Thread.currentThread().interrupt();
-                                    return msg;
-                                }
-                                // increase backoff exponentially
-                                backoff *= 2;
                             }
                         }
                         return msg;
@@ -277,7 +195,7 @@ public class NITpost extends Fragment {
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.logout1();
+                mListener.logout3();
             }
         });
         no.setOnClickListener(new View.OnClickListener() {
@@ -316,20 +234,20 @@ public class NITpost extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public String getusername1();
+        public String getusername3();
 
-        public void logout1();
+        public void logout3();
 
-        public int scraper1();
+        public int scraper3();
 
-        public String newmes();
+        public String newmes3();
     }
 
     public void clear() {
         MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
         int sizeof = refreshmes.size();
         for (int i = 0; i < sizeof; i++) {
-            dbHandler.addName(refreshmes.get(i), "posts");
+            dbHandler.addName(refreshmes.get(i), "dposts");
         }
     }
 
@@ -395,9 +313,10 @@ public class NITpost extends Fragment {
                 int i = 0;
                 for (; i < l; i++) {
                     tempjson = jsonArray.getJSONObject(i);
-                    refreshmes.add(tempjson.toString());
-                    if (update == -1) posts.add(posts.size(), tempjson.toString());
-                    if (update == 1) posts.add(0, tempjson.toString());
+                    if (update == 1 && tempjson.getString("sender").equals("director")) {
+                        refreshmes.add(tempjson.toString());
+                        posts.add(0, tempjson.toString());
+                    }
                 }
                 handler.sendEmptyMessage(0);
             } catch (IOException e) {

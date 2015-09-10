@@ -54,9 +54,10 @@ public class CustomAdapter extends ArrayAdapter<String> {
                 times.setText(t + " months ago");
             } else if (c.get(Calendar.DAY_OF_MONTH) != Integer.parseInt(date[2])) {
                 int t = c.get(Calendar.DAY_OF_MONTH) - Integer.parseInt(date[2]);
-                times.setText(t + " days ago");
-            } else{
-                times.setText("today");
+                if (t == 1) times.setText("yesterday");
+                else times.setText(t + " days ago");
+            } else {
+                times.setText("today at " + time[0] + ":" + time[1]);
             }
         } catch (JSONException e) {
             e.printStackTrace();

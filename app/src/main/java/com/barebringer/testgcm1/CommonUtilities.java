@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public final class CommonUtilities {
 
     // give your server registration url here
-    static final String SERVER_URL = "http://f3e24f04.ngrok.io/insertuser.php";
+    static final String SERVER_URL = "http://71461387.ngrok.io/insertuser.php";
     static final String NEW_URL = "http://10.0.0.109/~kousik/campuscomm/message.php";
 
     // Google project id
@@ -18,6 +18,7 @@ public final class CommonUtilities {
      * Tag used on log messages.
      */
     static final String TAG = "AndroidHive GCM";
+    static boolean start1 = false, start2 = false, start3 = false, apprun = false;
 
     static final String DISPLAY_MESSAGE_ACTION =
             "com.androidhive.pushnotifications.DISPLAY_MESSAGE";
@@ -39,16 +40,43 @@ public final class CommonUtilities {
         context.sendBroadcast(intent);
     }
 
-    static ArrayList<String> level1=new ArrayList<String>(){
-        {add("btech");add("mtech");add("select year");}
+    static ArrayList<String> level1 = new ArrayList<String>() {
+        {
+            add("btech");
+            add("mtech");
+            add("select year");
+        }
     };
-    static ArrayList<String> level2_2=new ArrayList<String>(){
-        {add("1");add("2");add("phd");add("select dept");}
+    static ArrayList<String> level2_2 = new ArrayList<String>() {
+        {
+            add("1");
+            add("2");
+            add("phd");
+            add("select dept");
+        }
     };
-    static ArrayList<String> level2_1=new ArrayList<String>(){
-        {add("1");add("2");add("3");add("4");add("select dept");}
+    static ArrayList<String> level2_1 = new ArrayList<String>() {
+        {
+            add("1");
+            add("2");
+            add("3");
+            add("4");
+            add("select dept");
+        }
     };
-    static ArrayList<String> level3=new ArrayList<String>(){
-        {add("archi");add("chemical");add("civil");add("cse");add("ece");add("eee");add("ice");add("mech");add("meata");add("prod");add("done");}
+    static ArrayList<String> level3 = new ArrayList<String>() {
+        {
+            add("archi");
+            add("chemical");
+            add("civil");
+            add("cse");
+            add("ece");
+            add("eee");
+            add("ice");
+            add("mech");
+            add("meata");
+            add("prod");
+            add("done");
+        }
     };
 }

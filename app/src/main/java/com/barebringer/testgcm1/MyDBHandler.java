@@ -30,6 +30,16 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 COLUMN_NAME + " TEXT " +
                 ");";
         db.execSQL(query);
+        query = "CREATE TABLE " + "fposts" + "(" +
+                COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                COLUMN_NAME + " TEXT " +
+                ");";
+        db.execSQL(query);
+        query = "CREATE TABLE " + "dposts" + "(" +
+                COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                COLUMN_NAME + " TEXT " +
+                ");";
+        db.execSQL(query);
     }
 
     @Override
@@ -39,19 +49,19 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //Add a new row to the database
-    public void addName(String p) {
-        String id="";
+    public void addName(String p, String tab) {
+        String id = "";
         try {
-            JSONObject js=new JSONObject(p);
-            id=js.getString("msg_id");
+            JSONObject js = new JSONObject(p);
+            id = js.getString("msg_id");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, p);
-        values.put(COLUMN_ID,Integer.parseInt(id));
+        values.put(COLUMN_ID, Integer.parseInt(id));
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_PRODUCTS, null, values);
+        db.insert(tab, null, values);
         db.close();
     }
 

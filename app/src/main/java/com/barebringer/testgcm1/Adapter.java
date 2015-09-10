@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,7 +26,7 @@ public class Adapter extends ArrayAdapter<String> {
         LayoutInflater cheenisInflater = LayoutInflater.from(getContext());
         View customview = cheenisInflater.inflate(R.layout.taggy, parent, false);
         String complete = getItem(position);
-        TextView t=(TextView)customview.findViewById(R.id.textView4);
+        TextView t = (TextView) customview.findViewById(R.id.textView4);
         t.setText(complete);
         return customview;
     }

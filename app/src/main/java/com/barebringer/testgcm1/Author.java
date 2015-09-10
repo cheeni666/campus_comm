@@ -39,9 +39,9 @@ import static com.barebringer.testgcm1.CommonUtilities.TAG;
 public class Author extends Activity {
     EditText user, pass;
     GoogleCloudMessaging gcm;
-    String regid=new String();
+    String regid = new String();
     String PROJECT_NUMBER = "835229264934";
-    static String name,password;
+    static String name, password;
     Intent i;
     ProgressBar spinner;
     private static final int MAX_ATTEMPTS = 3;
@@ -49,7 +49,7 @@ public class Author extends Activity {
     private static final Random random = new Random();
     TelephonyManager t;
 
-    Handler h=new Handler(){
+    Handler h = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             toast();
@@ -60,10 +60,10 @@ public class Author extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_author);
-        spinner=(ProgressBar)findViewById(R.id.progressBar);
+        spinner = (ProgressBar) findViewById(R.id.progressBar);
         spinner.setVisibility(View.GONE);
-        t= (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        i=new Intent(this,Posts.class);
+        t = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        i = new Intent(this, Posts.class);
         user = (EditText) findViewById(R.id._user);
         pass = (EditText) findViewById(R.id._password);
     }
@@ -118,9 +118,9 @@ public class Author extends Activity {
 
 
     public void submit(View v) {
-         name = user.getText().toString();
-         password = pass.getText().toString();
-        if(name==null||name.equals(""))return;
+        name = user.getText().toString();
+        password = pass.getText().toString();
+        if (name == null || name.equals("")) return;
         spinner.setVisibility(View.VISIBLE);
         user.setEnabled(false);
         pass.setEnabled(false);
@@ -153,11 +153,12 @@ public class Author extends Activity {
         }.execute(null, null, null);
 
     }
-    public void toast(){
+
+    public void toast() {
         spinner.setVisibility(View.GONE);
         user.setEnabled(true);
         pass.setEnabled(true);
-        Toast.makeText(Author.this,"Authentication failed",Toast.LENGTH_SHORT).show();
+        Toast.makeText(Author.this, "Authentication failed", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -213,12 +214,12 @@ public class Author extends Activity {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence="status_code";
+            CharSequence charSequence = "status_code";
 
             String line = null;
             try {
                 while ((line = reader.readLine()) != null) {
-                    if(line.contains(charSequence))
+                    if (line.contains(charSequence))
                         break;
                 }
             } catch (IOException e) {
@@ -231,8 +232,8 @@ public class Author extends Activity {
                 }
             }
             try {
-                JSONObject js=new JSONObject(line);
-                if (js.get("status_code").equals("1")){
+                JSONObject js = new JSONObject(line);
+                if (js.get("status_code").equals("1")) {
                     SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = store.edit();
                     editor.putString("usertext", name);
@@ -241,8 +242,7 @@ public class Author extends Activity {
                     finish();
                     startActivity(i);
                     return;
-                }
-                else h.sendEmptyMessage(0);
+                } else h.sendEmptyMessage(0);
 
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -46,6 +46,12 @@ public class GCMMessagerHandler extends IntentService {
     ArrayList<String> refreshmes;
     JSONObject tempjson;
     int new_id;
+    Handler toasty=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_SHORT).show();
+        }
+    };
     Handler h = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -104,7 +110,7 @@ public class GCMMessagerHandler extends IntentService {
         mes = extras.getString("data");
         if (mes == null) return;
         if (apprun == true) {
-            Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_SHORT).show();
+            toasty.sendEmptyMessage(0);
         } else {
             h.sendEmptyMessage(0);
             generateNotification(getApplicationContext(), mes);
@@ -118,17 +124,16 @@ public class GCMMessagerHandler extends IntentService {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification;
-        notification = new Notification(icon, "Nitt Calendar", when);
+        notification = new Notification(icon, "CampusComm", when);
         String title = message;
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.putExtra("update", true);
         // set intent so it does not start a new activity
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
                 PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context, title, message, intent);
+        notification.setLatestEventInfo(context,"CampusComm", message, intent);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         // Play default notification sound
@@ -136,7 +141,7 @@ public class GCMMessagerHandler extends IntentService {
 
         // Vibrate if vibrate is enabled
         notification.defaults |= Notification.DEFAULT_VIBRATE;
-        notificationManager.notify(0, notification);
+        notificationManager.notify(666, notification);
     }
 
     public void clear() {

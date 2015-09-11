@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public final class CommonUtilities {
 
     // give your server registration url here
-    static final String SERVER_URL = "http://71461387.ngrok.io/insertuser.php";
+    static final String SERVER_URL = "http://10.0.0.109/~kousik/campuscomm/register.php";
     static final String NEW_URL = "http://10.0.0.109/~kousik/campuscomm/message.php";
 
     // Google project id
@@ -57,10 +57,10 @@ public final class CommonUtilities {
     };
     static ArrayList<String> level2_1 = new ArrayList<String>() {
         {
-            add("1");
-            add("2");
-            add("3");
-            add("4");
+            add("11");
+            add("12");
+            add("13");
+            add("14");
             add("select dept");
         }
     };

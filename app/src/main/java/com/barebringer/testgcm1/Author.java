@@ -214,7 +214,7 @@ public class Author extends Activity {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "status_code";
+            CharSequence charSequence = "status";
 
             String line = null;
             try {
@@ -233,7 +233,8 @@ public class Author extends Activity {
             }
             try {
                 JSONObject js = new JSONObject(line);
-                if (js.get("status_code").equals("1")) {
+                int s=Integer.parseInt(js.getString("status_id"));
+                if (s>0) {
                     SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = store.edit();
                     editor.putString("usertext", name);

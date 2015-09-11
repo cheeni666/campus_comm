@@ -232,11 +232,9 @@ public class STUDpost extends Fragment {
             actionButton.setEnabled(false);
             done = 1;
             try {
-                polosjson.put("degree", "all,");
-                polos = new String();
-                polos += "all,";
-                polosjson.put("year", polos);
-                polosjson.put("dept", polos);
+                polosjson.put("degree", null);
+                polosjson.put("year", null);
+                polosjson.put("dept", null);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

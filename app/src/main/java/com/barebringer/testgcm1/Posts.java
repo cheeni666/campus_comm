@@ -125,9 +125,7 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
                     lat_id = c.getInt(c.getColumnIndex("_id"));
                     query = "DELETE FROM " + "fposts" + " WHERE _id < " + lat_id + ";";
                     dj.execSQL(query);
-                    dj.close();
-                    db.close();
-                    return;
+                    break;
                 }
             }
             c.moveToNext();
@@ -144,9 +142,7 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
                     lat_id = c.getInt(c.getColumnIndex("_id"));
                     query = "DELETE FROM " + "dposts" + " WHERE _id < " + lat_id + ";";
                     dj.execSQL(query);
-                    dj.close();
-                    db.close();
-                    return;
+                    break;
                 }
             }
             c.moveToNext();

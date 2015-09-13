@@ -42,14 +42,14 @@ import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
 public class GCMMessagerHandler extends IntentService {
 
     String mes;
-    private Handler handler;
     ArrayList<String> refreshmes;
     JSONObject tempjson;
     int new_id;
+    int done;
     Handler toasty=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_LONG).show();
         }
     };
     Handler h = new Handler() {
@@ -87,6 +87,7 @@ public class GCMMessagerHandler extends IntentService {
 
                 @Override
                 protected void onPostExecute(String msg) {
+                    done=1;
                 }
             }.execute(null, null, null);
         }
@@ -100,7 +101,6 @@ public class GCMMessagerHandler extends IntentService {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
-        handler = new Handler();
     }
 
     @Override
@@ -112,7 +112,9 @@ public class GCMMessagerHandler extends IntentService {
         if (apprun == true) {
             toasty.sendEmptyMessage(0);
         } else {
+            done=0;
             h.sendEmptyMessage(0);
+            while(done==0);
             generateNotification(getApplicationContext(), mes);
         }
 

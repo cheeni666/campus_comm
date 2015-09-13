@@ -214,7 +214,7 @@ public class Author extends Activity {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "status";
+            CharSequence charSequence = "status_id";
 
             String line = null;
             try {

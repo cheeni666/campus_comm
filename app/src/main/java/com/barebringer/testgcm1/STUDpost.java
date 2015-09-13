@@ -77,13 +77,13 @@ public class STUDpost extends Fragment {
     Handler failtoast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_LONG).show();
         }
     };
     Handler stoast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "done", Toast.LENGTH_LONG).show();
         }
     };
 
@@ -371,7 +371,8 @@ public class STUDpost extends Fragment {
             }
             try {
                 JSONObject js = new JSONObject(line);
-                if (js.get("status_code").equals("1")) {
+                int status=Integer.parseInt(js.getString("status_code"));
+                if (status>0) {
                     stoast.sendEmptyMessage(0);
                 } else failtoast.sendEmptyMessage(0);
 

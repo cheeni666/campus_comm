@@ -56,7 +56,7 @@ import static com.barebringer.testgcm1.CommonUtilities.level3;
 public class STUDpost extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    String username, dispstring = new String();
+    static String username, dispstring = new String();
     View v;
     Button send;
     EditText mes;
@@ -64,13 +64,13 @@ public class STUDpost extends Fragment {
     ArrayList<String> tags = new ArrayList<String>();
     ArrayAdapter tagAdapter;
     ListView l;
-    JSONObject polosjson = new JSONObject();
-    String polos = new String();
+    static JSONObject polosjson = new JSONObject();
+    static String polos = new String();
     Button b;
     int level = 1;
     boolean btech, mtech;
     int done = 0, temp = 0;
-    TextView goh;
+    static TextView goh;
     private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();

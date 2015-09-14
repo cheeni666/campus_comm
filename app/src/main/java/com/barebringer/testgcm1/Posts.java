@@ -5,32 +5,40 @@ import java.util.List;
 import java.util.Vector;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 
-public class Posts extends FragmentActivity implements NITpost.OnFragmentInteractionListener, STUDpost.OnFragmentInteractionListener, Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
+public class Posts extends ActionBarActivity implements ActionBar.TabListener, NITpost.OnFragmentInteractionListener, STUDpost.OnFragmentInteractionListener, Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
 
     private PagerAdapter mPagerAdapter;
+    ActionBar ab;
     ViewPager pager;
     String username;
     SharedPreferences store;
-    String temp = null;
-    int f = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-
         username = store.getString("usertext", null);
         setContentView(R.layout.activity_posts);
         initialisePaging();
+        ab = getSupportActionBar();
+        ab.setTitle(username);
+        ab.setDisplayShowTitleEnabled(true);
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        ab.addTab(ab.newTab().setTabListener(this).setText("ALL POSTS"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("FESTS"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("DIRECTOR"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("POST"));
     }
 
     private void initialisePaging() {
@@ -44,41 +52,23 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
 
         pager = (ViewPager) findViewById(R.id.viewpager);
         pager.setAdapter(mPagerAdapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                ab.selectTab(ab.getTabAt(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
-
-
-    @Override
-    public void logout1() {
-        Intent i = new Intent(this, MainActivity.class);
-        SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = store.edit();
-        editor.putString("usertext", null);
-        editor.apply();
-        startActivity(i);
-        return;
-    }
-
-    @Override
-    public int scraper1() {
-        return f;
-    }
-
-    @Override
-    public String newmes() {
-        return temp;
-    }
-
-    @Override
-    public void logout2() {
-        Intent i = new Intent(this, MainActivity.class);
-        SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = store.edit();
-        editor.putString("usertext", null);
-        editor.apply();
-        startActivity(i);
-        return;
-    }
-
 
     @Override
     public String getusername1() {
@@ -97,8 +87,8 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         MyDBHandler db = new MyDBHandler(this, null, null, 1);
         SQLiteDatabase dj = db.getDB();
         String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
@@ -149,6 +139,7 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
         }
         dj.close();
         db.close();
+        finish();
     }
 
     @Override
@@ -157,24 +148,17 @@ public class Posts extends FragmentActivity implements NITpost.OnFragmentInterac
     }
 
     @Override
-    public void logout3() {
-        Intent i = new Intent(this, MainActivity.class);
-        SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = store.edit();
-        editor.putString("usertext", null);
-        editor.apply();
-        startActivity(i);
-        return;
+    public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
+        pager.setCurrentItem(tab.getPosition());
     }
 
     @Override
-    public int scraper3() {
-        return f;
+    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
+
     }
 
     @Override
-    public String newmes3() {
-        return temp;
-    }
+    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
 
+    }
 }

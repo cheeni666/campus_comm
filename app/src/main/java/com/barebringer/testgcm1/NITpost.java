@@ -15,9 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -51,8 +49,6 @@ public class NITpost extends Fragment {
     private OnFragmentInteractionListener mListener;
     String username;
     View v;
-    TextView status;
-    Button yes, no;
     ArrayAdapter cheenisAdapter;
 
     int update;
@@ -88,8 +84,7 @@ public class NITpost extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    cheenisAdapter = new CustomAdapter(getActivity(), posts);
-                    cheenisListView.setAdapter(cheenisAdapter);
+                    cheenisAdapter.notifyDataSetChanged();
                     if (update == -1)
                         cheenisListView.setSelection(posts.size() - refreshmes.size());
                 }
@@ -107,12 +102,8 @@ public class NITpost extends Fragment {
             return null;
         }
         v = inflater.inflate(R.layout.fragment_nitpost, container, false);
-        status = (TextView) v.findViewById(R.id.header1);
-        yes = (Button) v.findViewById(R.id.yes1);
-        no = (Button) v.findViewById(R.id.no1);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         username = mListener.getusername1();
-        status.setText(username);
 
         cheenisListView = (ListView) v.findViewById(R.id.listView);
         cheenisAdapter = new CustomAdapter(getActivity(), posts);
@@ -274,33 +265,6 @@ public class NITpost extends Fragment {
 
             }
         });
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.logout1();
-            }
-        });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yes.setAlpha(0);
-                no.setAlpha(0);
-                cheenisListView.setAlpha(1);
-                yes.setEnabled(false);
-                no.setEnabled(false);
-            }
-        });
-        status.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                yes.setAlpha(1);
-                no.setAlpha(1);
-                cheenisListView.setAlpha(0);
-                yes.setEnabled(true);
-                no.setEnabled(true);
-                return true;
-            }
-        });
         return v;
     }
 
@@ -317,12 +281,6 @@ public class NITpost extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getusername1();
-
-        public void logout1();
-
-        public int scraper1();
-
-        public String newmes();
     }
 
     public void clear() {

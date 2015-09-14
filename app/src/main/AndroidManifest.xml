@@ -50,7 +50,7 @@
         </activity>
         <activity
             android:name=".Posts"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/CustomActionBarTheme"
             android:screenOrientation="portrait"
             android:label="Posts" >
         </activity>

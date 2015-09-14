@@ -219,6 +219,7 @@ public class Author extends Activity {
             String line = null;
             try {
                 while ((line = reader.readLine()) != null) {
+                    Log.d("check",line);
                     if (line.contains(charSequence))
                         break;
                 }

@@ -1,9 +1,6 @@
 package com.barebringer.testgcm1;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -17,9 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -38,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 
 import static com.barebringer.testgcm1.CommonUtilities.start3;
 import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
@@ -47,14 +41,10 @@ import static com.barebringer.testgcm1.CommonUtilities.TAG;
 public class Director extends Fragment {
 
     private static final int MAX_ATTEMPTS = 1;
-    private static final int BACKOFF_MILLI_SECONDS = 2000;
-    private static final Random random = new Random();
 
     private OnFragmentInteractionListener mListener;
     String username;
     View v;
-    TextView status;
-    Button yes, no;
     ArrayAdapter cheenisAdapter;
 
     int update;
@@ -89,8 +79,7 @@ public class Director extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    cheenisAdapter = new CustomAdapter(getActivity(), posts);
-                    cheenisListView.setAdapter(cheenisAdapter);
+                    cheenisAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -106,12 +95,8 @@ public class Director extends Fragment {
             return null;
         }
         v = inflater.inflate(R.layout.fragment_director, container, false);
-        status = (TextView) v.findViewById(R.id.header1_2);
-        yes = (Button) v.findViewById(R.id.yes1_2);
-        no = (Button) v.findViewById(R.id.no1_2);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout_2);
         username = mListener.getusername3();
-        status.setText(username);
 
         cheenisListView = (ListView) v.findViewById(R.id.listView_2);
         cheenisAdapter = new CustomAdapter(getActivity(), posts);
@@ -192,33 +177,6 @@ public class Director extends Fragment {
 
             }
         });
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.logout3();
-            }
-        });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yes.setAlpha(0);
-                no.setAlpha(0);
-                cheenisListView.setAlpha(1);
-                yes.setEnabled(false);
-                no.setEnabled(false);
-            }
-        });
-        status.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                yes.setAlpha(1);
-                no.setAlpha(1);
-                cheenisListView.setAlpha(0);
-                yes.setEnabled(true);
-                no.setEnabled(true);
-                return true;
-            }
-        });
         return v;
     }
 
@@ -235,12 +193,6 @@ public class Director extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getusername3();
-
-        public void logout3();
-
-        public int scraper3();
-
-        public String newmes3();
     }
 
     public void clear() {

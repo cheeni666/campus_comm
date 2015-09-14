@@ -309,8 +309,6 @@ public class STUDpost extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getusername2();
-
-        public void logout2();
     }
 
 

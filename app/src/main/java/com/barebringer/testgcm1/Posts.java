@@ -10,13 +10,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
-public class Posts extends ActionBarActivity implements ActionBar.TabListener, NITpost.OnFragmentInteractionListener, STUDpost.OnFragmentInteractionListener, Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
+public class Posts extends ActionBarActivity implements ActionBar.TabListener,MessageFragment.OnFragmentInteractionListener, NITpost.OnFragmentInteractionListener, STUDpost.OnFragmentInteractionListener, Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
 
     private PagerAdapter mPagerAdapter;
     ActionBar ab;
@@ -30,24 +31,12 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener, N
         store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
         username = store.getString("usertext", null);
         setContentView(R.layout.activity_posts);
-        initialisePaging();
-        ab = getSupportActionBar();
-        ab.setTitle(username);
-        ab.setDisplayShowTitleEnabled(true);
-        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        ab.addTab(ab.newTab().setTabListener(this).setText("ALL POSTS"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("FESTS"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("DIRECTOR"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("POST"));
-    }
-
-    private void initialisePaging() {
-        // TODO Auto-generated method stub
+        //init paging
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this, NITpost.class.getName()));
         fragments.add(Fragment.instantiate(this, Fest.class.getName()));
         fragments.add(Fragment.instantiate(this, Director.class.getName()));
-        fragments.add(Fragment.instantiate(this, STUDpost.class.getName()));
+        fragments.add(Fragment.instantiate(this, MessageFragment.class.getName()));
         mPagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
 
         pager = (ViewPager) findViewById(R.id.viewpager);
@@ -68,6 +57,15 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener, N
 
             }
         });
+
+        ab = getSupportActionBar();
+        ab.setTitle(username);
+        ab.setDisplayShowTitleEnabled(true);
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        ab.addTab(ab.newTab().setTabListener(this).setText("ALL POSTS"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("FESTS"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("DIRECTOR"));
+        ab.addTab(ab.newTab().setTabListener(this).setText("POST"));
     }
 
     @Override
@@ -160,5 +158,15 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener, N
     @Override
     public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
 
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public String getusernamemes() {
+        return username;
     }
 }

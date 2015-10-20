@@ -44,7 +44,7 @@ public class Author extends Activity {
     static String name, password;
     Intent i;
     ProgressBar spinner;
-    private static final int MAX_ATTEMPTS = 3;
+    private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
     TelephonyManager t;
@@ -217,11 +217,14 @@ public class Author extends Activity {
             CharSequence charSequence = "status_id";
 
             String line = null;
+            boolean exp = false;
             try {
                 while ((line = reader.readLine()) != null) {
-                    Log.d("check",line);
-                    if (line.contains(charSequence))
+                    Log.d("check", line);
+                    if (line.contains(charSequence)) {
+                        exp = true;
                         break;
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -233,18 +236,20 @@ public class Author extends Activity {
                 }
             }
             try {
-                JSONObject js = new JSONObject(line);
-                int s=Integer.parseInt(js.getString("status_id"));
-                if (s>0) {
-                    SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = store.edit();
-                    editor.putString("usertext", name);
-                    editor.putString("user_id", js.get("user_id").toString());
-                    editor.apply();
-                    finish();
-                    startActivity(i);
-                    return;
-                } else h.sendEmptyMessage(0);
+                if (exp) {
+                    JSONObject js = new JSONObject(line);
+                    int s = Integer.parseInt(js.getString("status_id"));
+                    if (s > 0) {
+                        SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = store.edit();
+                        editor.putString("usertext", name);
+                        editor.putString("user_id", js.get("user_id").toString());
+                        editor.apply();
+                        finish();
+                        startActivity(i);
+                        return;
+                    } else h.sendEmptyMessage(0);
+                } else spinner.setVisibility(View.GONE);
 
             } catch (JSONException e) {
                 e.printStackTrace();

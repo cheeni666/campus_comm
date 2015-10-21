@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public final class CommonUtilities {
 
     // give your server registration url here
-    static final String SERVER_URL = "http://10.0.0.109/~kousik/campuscomm/register.php";
-    static final String NEW_URL = "http://10.0.0.109/~kousik/campuscomm/message.php";
+    static final String SERVER_URL = "http://beerfactory.pragyan.org/~kousik/campuscomm/register.php";
+    static final String NEW_URL = "http://beerfactory.pragyan.org/~kousik/campuscomm/message.php";
 
     // Google project id
     static final String SENDER_ID = "835229264934";

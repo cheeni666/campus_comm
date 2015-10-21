@@ -25,7 +25,8 @@
         android:id="@+id/_user"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:textSize="50dp" />
+        android:textSize="50dp"
+        android:editable="false" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -58,10 +59,11 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:onClick="submit"
-        android:background="#06809a"
+        android:background="@drawable/shadow"
         android:translationZ="10dp"
         android:elevation="10dp"
-        android:typeface="monospace" />
+        android:typeface="monospace"
+        android:alpha=".75" />
 
     <TextView
         android:layout_width="match_parent"

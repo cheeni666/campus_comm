@@ -27,5 +27,6 @@
         android:focusable="false"
         android:text="HEY"
         android:textColor="#000"
-        android:textSize="20sp" />
+        android:textSize="15dp"
+        android:gravity="center_vertical" />
 </RelativeLayout>

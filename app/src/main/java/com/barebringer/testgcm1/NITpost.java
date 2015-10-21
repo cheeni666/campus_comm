@@ -92,6 +92,12 @@ public class NITpost extends Fragment {
         }
     };
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     int old_id = 0, new_id = 0;
 
     @Override

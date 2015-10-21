@@ -73,11 +73,18 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
     };
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Calendar c = Calendar.getInstance();
         int cy = c.get(Calendar.YEAR);
         cy = cy % 100;
+        level2 = new ArrayList<String>();
         level2.add(""+cy);cy--;
         level2.add(""+cy);cy--;
         level2.add(""+cy);cy--;
@@ -275,7 +282,6 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
                     }
             }
         });
-
         return view;
     }
 

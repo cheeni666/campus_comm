@@ -1,16 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.dev.pro.noob.rb.campuscommunicationdelta.MessageFragment">
+    android:background="@drawable/backy">
 
     <!-- TODO: Update blank fragment layout -->
     <GridView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:numColumns="4"
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp"
         android:id="@+id/gridview"/>
     <com.melnykov.fab.FloatingActionButton
         android:layout_width="wrap_content"
@@ -24,26 +25,18 @@
         app:fab_colorPressed="@color/primarycolor"
         android:src="@drawable/ic_content_add"
         app:fab_colorRipple="@color/ripple_material_light"/>
-    <com.melnykov.fab.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tags_fab"
-        android:layout_above="@+id/fab"
-        android:visibility="gone"
-        android:layout_alignStart="@+id/fab"
-        android:layout_marginEnd="7dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
-        app:fab_colorNormal="@color/accentcolor"
-        app:fab_colorPressed="@color/primarycolor"
-        android:src="@drawable/ic_hash"
-        app:fab_colorRipple="@color/ripple_material_light"/>
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="wrap_content"
         android:id="@+id/tags_list"
         android:isScrollContainer="false"
-        android:layout_above="@+id/editText"/>
+        android:layout_below="@+id/gridview"
+        android:layout_above="@+id/fab"
+        android:layout_toLeftOf="@+id/fab"
+        android:layout_toStartOf="@+id/fab"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="3dp" />
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,5 +53,19 @@
         android:layout_toLeftOf="@+id/fab"
         android:layout_margin="10dp"
         android:layout_toStartOf="@+id/fab"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="#"
+        android:id="@+id/chk"
+        android:background="@drawable/shadow"
+        android:layout_above="@+id/fab"
+        android:layout_alignLeft="@+id/fab"
+        android:layout_alignStart="@+id/fab"
+        android:layout_alignRight="@+id/fab"
+        android:layout_alignEnd="@+id/fab"
+        android:textSize="40dp"
+        android:layout_margin="2dp" />
 
 </RelativeLayout>

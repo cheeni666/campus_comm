@@ -161,11 +161,6 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,Me
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
     public String getusernamemes() {
         return username;
     }

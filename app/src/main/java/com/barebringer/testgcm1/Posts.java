@@ -17,10 +17,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
-public class Posts extends ActionBarActivity implements ActionBar.TabListener,MessageFragment.OnFragmentInteractionListener, NITpost.OnFragmentInteractionListener, STUDpost.OnFragmentInteractionListener, Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
+public class Posts extends ActionBarActivity implements ActionBar.TabListener,
+        MessageFragment.OnFragmentInteractionListener, NITpost.OnFragmentInteractionListener,
+        Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
 
-    private PagerAdapter mPagerAdapter;
-    ActionBar ab;
+    private PagerAdapter pagerAdapter;
+    ActionBar actionBar;
     ViewPager pager;
     String username;
     SharedPreferences store;
@@ -28,19 +30,22 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,Me
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //get username from shared mem
         store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        username = store.getString("usertext", null);
+        username = store.getString("username", null);
         setContentView(R.layout.activity_posts);
-        //init paging
+
+        //initialise paging
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this, NITpost.class.getName()));
         fragments.add(Fragment.instantiate(this, Fest.class.getName()));
         fragments.add(Fragment.instantiate(this, Director.class.getName()));
         fragments.add(Fragment.instantiate(this, MessageFragment.class.getName()));
-        mPagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
+        pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
 
         pager = (ViewPager) findViewById(R.id.viewpager);
-        pager.setAdapter(mPagerAdapter);
+        pager.setAdapter(pagerAdapter);
+        pager.setOffscreenPageLimit(4);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -49,7 +54,7 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,Me
 
             @Override
             public void onPageSelected(int position) {
-                ab.selectTab(ab.getTabAt(position));
+                actionBar.selectTab(actionBar.getTabAt(position));
             }
 
             @Override
@@ -58,91 +63,31 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,Me
             }
         });
 
-        ab = getSupportActionBar();
-        ab.setTitle(username);
-        ab.setDisplayShowTitleEnabled(true);
-        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        ab.addTab(ab.newTab().setTabListener(this).setText("ALL POSTS"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("FESTS"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("DIRECTOR"));
-        ab.addTab(ab.newTab().setTabListener(this).setText("POST"));
-    }
-
-    @Override
-    public String getusername1() {
-        return username;
-    }
-
-    @Override
-    public String getusername2() {
-        return username;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        //customising actionbar
+        actionBar = getSupportActionBar();
+        actionBar.setTitle(username);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("ALL POSTS"));
+        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("FESTS"));
+        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("DIRECTOR"));
+        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("POST"));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         MyDBHandler db = new MyDBHandler(this, null, null, 1);
-        SQLiteDatabase dj = db.getDB();
-        String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
-        Cursor c = dj.rawQuery(query, null);
-        //Move to the first row in your results
-        c.moveToFirst();
-        int lat_id = 0;
-        if (c.getCount() != 0) {
-            lat_id = c.getInt(c.getColumnIndex("_id"));
-        }
-        lat_id -= 20;
-        lat_id++;
-        query = "DELETE FROM " + "posts" + " WHERE _id < " + lat_id + ";";
-        dj.execSQL(query);
-
-        query = "SELECT * FROM " + "fposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
-        c = dj.rawQuery(query, null);
-        c.moveToFirst();
-        lat_id = 0;
-        while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex("post")) != null) {
-                lat_id++;
-                if (lat_id == 20) {
-                    lat_id = c.getInt(c.getColumnIndex("_id"));
-                    query = "DELETE FROM " + "fposts" + " WHERE _id < " + lat_id + ";";
-                    dj.execSQL(query);
-                    break;
-                }
-            }
-            c.moveToNext();
-        }
-
-        query = "SELECT * FROM " + "dposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
-        c = dj.rawQuery(query, null);
-        c.moveToFirst();
-        lat_id = 0;
-        while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex("post")) != null) {
-                lat_id++;
-                if (lat_id == 20) {
-                    lat_id = c.getInt(c.getColumnIndex("_id"));
-                    query = "DELETE FROM " + "dposts" + " WHERE _id < " + lat_id + ";";
-                    dj.execSQL(query);
-                    break;
-                }
-            }
-            c.moveToNext();
-        }
-        dj.close();
-        db.close();
+        db.limitTabletoN("posts", 20);
+        db.limitTabletoN("fposts", 20);
+        db.limitTabletoN("dposts", 20);
         finish();
     }
 
     @Override
-    public String getusername3() {
-        return username;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -161,7 +106,22 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,Me
     }
 
     @Override
-    public String getusernamemes() {
+    public String getusername_message() {
+        return username;
+    }
+
+    @Override
+    public String getusername_nitpost() {
+        return username;
+    }
+
+    @Override
+    public String getusername_fest() {
+        return username;
+    }
+
+    @Override
+    public String getusername_director() {
         return username;
     }
 }

@@ -31,33 +31,39 @@ public class CustomAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater cheenisInflater = LayoutInflater.from(getContext());
         View customview = cheenisInflater.inflate(R.layout.custom, parent, false);
+
         String complete = getItem(position);
         Calendar c = Calendar.getInstance();
-        TextView identitytext = (TextView) customview.findViewById(R.id.identitytext);
-        TextView posttext = (TextView) customview.findViewById(R.id.posttext);
-        TextView times = (TextView) customview.findViewById(R.id.timestamp);
-        ImageView v = (ImageView) customview.findViewById(R.id.strip);
+
+        //Generate the post for the list view
+        TextView username_text = (TextView) customview.findViewById(R.id.custom_username_text);
+        TextView mes_text = (TextView) customview.findViewById(R.id.custom_mes_text);
+        TextView time_text = (TextView) customview.findViewById(R.id.custom_time_text);
+        ImageView colorstrip_image = (ImageView) customview.findViewById(R.id.custom_colorstrip_image);
+
         int color = Color.argb(255, r.nextInt(256), r.nextInt(256), r.nextInt(256));
-        v.setBackgroundColor(color);
+        colorstrip_image.setBackgroundColor(color);
         try {
             JSONObject j = new JSONObject(complete);
-            identitytext.setText(j.getString("sender") + " posted");
-            posttext.setText(j.getString("message"));
+            username_text.setText(j.getString("sender") + " posted");
+            mes_text.setText(j.getString("message"));
+
+            //Processing timestamp
             String[] timestamp = j.getString("timestamp").split(" ");
             String[] date = timestamp[0].split("-");
             String[] time = timestamp[1].split(":");
             if (c.get(Calendar.YEAR) != Integer.parseInt(date[0])) {
                 int t = c.get(Calendar.YEAR) - Integer.parseInt(date[0]);
-                times.setText(t + " years ago");
+                time_text.setText(t + " years ago");
             } else if (1 + c.get(Calendar.MONTH) != Integer.parseInt(date[1])) {
                 int t = 1 + c.get(Calendar.MONTH) - Integer.parseInt(date[1]);
-                times.setText(t + " months ago");
+                time_text.setText(t + " months ago");
             } else if (c.get(Calendar.DAY_OF_MONTH) != Integer.parseInt(date[2])) {
                 int t = c.get(Calendar.DAY_OF_MONTH) - Integer.parseInt(date[2]);
-                if (t == 1) times.setText("yesterday");
-                else times.setText(t + " days ago");
+                if (t == 1) time_text.setText("yesterday");
+                else time_text.setText(t + " days ago");
             } else {
-                times.setText("today at " + time[0] + ":" + time[1]);
+                time_text.setText("today at " + time[0] + ":" + time[1]);
             }
         } catch (JSONException e) {
             e.printStackTrace();

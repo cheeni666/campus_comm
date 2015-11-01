@@ -34,25 +34,27 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.barebringer.testgcm1.CommonUtilities.SERVER_URL;
+import static com.barebringer.testgcm1.CommonUtilities.PROJECT_NUMBER;
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
 
 public class Author extends Activity {
-    EditText user, pass;
+    EditText username_edittext, password_edittext;
     GoogleCloudMessaging gcm;
     String regid = new String();
-    String PROJECT_NUMBER = "835229264934";
-    static String name, password;
+    static String username, password;
     Intent i;
+    Integer status;
+
     ProgressBar spinner;
-    private static final int MAX_ATTEMPTS = 1;
-    private static final int BACKOFF_MILLI_SECONDS = 2000;
-    private static final Random random = new Random();
     TelephonyManager t;
 
-    Handler h = new Handler() {
+    Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            toast();
+            spinner.setVisibility(View.GONE);
+            username_edittext.setEnabled(true);
+            password_edittext.setEnabled(true);
+            Toast.makeText(Author.this, "Authentication failed", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -60,118 +62,88 @@ public class Author extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_author);
+        i = new Intent(this, Posts.class);
+
         spinner = (ProgressBar) findViewById(R.id.progressBar);
         spinner.setVisibility(View.GONE);
+
+        username_edittext = (EditText) findViewById(R.id.author_username_edittext);
+        password_edittext = (EditText) findViewById(R.id.author_password_edittext);
+
         t = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        i = new Intent(this, Posts.class);
-        user = (EditText) findViewById(R.id._user);
-        pass = (EditText) findViewById(R.id._password);
     }
-
-    void pregister(final Context context, final String regId) {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-                Log.i(TAG, "registering device (regId = " + regId + ")");
-                String serverUrl = SERVER_URL;
-                Map<String, String> paramss = new HashMap<String, String>();
-                paramss.put("username", name);
-                paramss.put("password", password);
-                paramss.put("gcmid", regId);
-                paramss.put("action_id", "0");
-                paramss.put("ad_id", t.getDeviceId());
-                long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    Log.d(TAG, "Attempt #" + i + " to register");
-                    try {
-                        post(serverUrl, paramss);
-                        return msg;
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                        if (i == MAX_ATTEMPTS) {
-                            break;
-                        }
-                        try {
-                            Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                            Thread.sleep(backoff);
-                        } catch (InterruptedException e1) {
-                            // Activity finished before we complete - exit.
-                            Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                            Thread.currentThread().interrupt();
-                            return msg;
-                        }
-                        // increase backoff exponentially
-                        backoff *= 2;
-                    }
-                }
-                h.sendEmptyMessage(0);
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-            }
-        }.execute(null, null, null);
-
-    }
-
 
     public void submit(View v) {
-        name = user.getText().toString();
-        password = pass.getText().toString();
-        if (name == null || name.equals("")) return;
+        username = username_edittext.getText().toString();
+        password = password_edittext.getText().toString();
+        if (username == null || username.equals("")) return;
+
         spinner.setVisibility(View.VISIBLE);
-        user.setEnabled(false);
-        pass.setEnabled(false);
+        username_edittext.setEnabled(false);
+        password_edittext.setEnabled(false);
+
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                String msg = "";
                 try {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
                     regid = gcm.register(PROJECT_NUMBER);
-                    msg = regid;
-                    pregister(Author.this, regid);
-
+                    prepost(Author.this, regid);
                 } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                    h.sendEmptyMessage(0);
+                    toast.sendEmptyMessage(0);
                 }
-                return msg;
+                return null;
             }
 
             @Override
             protected void onPostExecute(String msg) {
+                //Write GCMid to the shared memory for future reference
                 SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = store.edit();
-                editor.putString("device_regid", regid);
+                editor.putString("GCMid", regid);
                 editor.apply();
             }
         }.execute(null, null, null);
 
     }
 
-    public void toast() {
-        spinner.setVisibility(View.GONE);
-        user.setEnabled(true);
-        pass.setEnabled(true);
-        Toast.makeText(Author.this, "Authentication failed", Toast.LENGTH_SHORT).show();
-    }
+    void prepost(final Context context, final String regId) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                //if login successfull go to next activity
+                if (status > 0) {
+                    finish();
+                    startActivity(i);
+                    return;
+                }
+            }
 
+            @Override
+            protected String doInBackground(Void... params) {
+                Log.i(TAG, "registering device (regId = " + regId + ")");
+                String serverUrl = SERVER_URL;
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        finish();
-    }
+                Map<String, String> paramss = new HashMap<String, String>();
+                paramss.put("username", username);
+                paramss.put("password", password);
+                paramss.put("gcmid", regId);
+                paramss.put("action_id", "0");
+                paramss.put("ad_id", t.getDeviceId());
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
+                try {
+                    post(serverUrl, paramss);
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to register");
+                    toast.sendEmptyMessage(0);
+                }
+                return null;
+
+            }
+        }.execute(null, null, null);
     }
 
     private void post(String endpoint, Map<String, String> params)
@@ -214,15 +186,14 @@ public class Author extends Activity {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "status_id";
 
+            CharSequence charSequence = "status_id";
             String line = null;
-            boolean exp = false;
             try {
                 while ((line = reader.readLine()) != null) {
-                    Log.d("check", line);
+                    //Check whether response contains status_id
+                    Log.d(TAG, line);
                     if (line.contains(charSequence)) {
-                        exp = true;
                         break;
                     }
                 }
@@ -236,23 +207,21 @@ public class Author extends Activity {
                 }
             }
             try {
-                if (exp) {
-                    JSONObject js = new JSONObject(line);
-                    int s = Integer.parseInt(js.getString("status_id"));
-                    if (s > 0) {
-                        SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = store.edit();
-                        editor.putString("usertext", name);
-                        editor.putString("user_id", js.get("user_id").toString());
-                        editor.apply();
-                        finish();
-                        startActivity(i);
-                        return;
-                    } else h.sendEmptyMessage(0);
-                } else spinner.setVisibility(View.GONE);
-
+                //Processing response
+                JSONObject js = new JSONObject(line);
+                status = Integer.parseInt(js.getString("status_id"));
+                if (status > 0) {
+                    //Write username to shared mem if succesfull for the mainactivity to log
+                    //in automatically the second time
+                    SharedPreferences store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = store.edit();
+                    editor.putString("username", username);
+                    editor.putString("userid", js.get("user_id").toString());
+                    editor.apply();
+                } else toast.sendEmptyMessage(0);
             } catch (JSONException e) {
                 e.printStackTrace();
+                toast.sendEmptyMessage(0);
             }
         } finally {
             if (conn != null) {
@@ -261,4 +230,15 @@ public class Author extends Activity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
 }

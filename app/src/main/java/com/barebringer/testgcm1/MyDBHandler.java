@@ -14,7 +14,6 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "testgcm1.db";
-    public static final String TABLE_PRODUCTS = "posts";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "post";
 
@@ -25,7 +24,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE " + TABLE_PRODUCTS + "(" +
+        String query = "CREATE TABLE " + "posts" + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_NAME + " TEXT " +
                 ");";
@@ -42,57 +41,55 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
-        onCreate(db);
-    }
-
     //Add a new row to the database
-    public void addName(String p, String tab) {
+    public void addName(String json, String table) {
         String id = "";
         try {
-            JSONObject js = new JSONObject(p);
+            JSONObject js = new JSONObject(json);
             id = js.getString("msg_id");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, p);
+        values.put(COLUMN_NAME, json);
         values.put(COLUMN_ID, Integer.parseInt(id));
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(tab, null, values);
+        db.insert(table, null, values);
         db.close();
-    }
-
-    public String databaseToString() {
-        String dbString = "";
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-
-        //Cursor points to a location in your results
-        Cursor c = db.rawQuery(query, null);
-        //Move to the first row in your results
-        c.moveToFirst();
-
-        //Position after the last row means the end of the results
-        while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex(COLUMN_NAME)) != null) {
-                dbString += c.getString(c.getColumnIndex(COLUMN_NAME)) + ":";
-                dbString += "\n";
-            }
-            c.moveToNext();
-        }
-        db.close();
-        return dbString;
-    }
-
-    public void Upgrade() {
-        SQLiteDatabase db = getWritableDatabase();
-        onUpgrade(db, 1, 1);
     }
 
     public SQLiteDatabase getDB() {
         return getWritableDatabase();
+    }
+
+    //keeps only latest local N messages and deletes rest
+    public void limitTabletoN(String table,Integer N){
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "SELECT * FROM " + table + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        Integer lat_id = 0;
+
+        //Iterate from latest message down by N messages and deletes the rest
+        while (!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex("post")) != null) {
+                lat_id++;
+                if (lat_id == N) {
+                    lat_id = c.getInt(c.getColumnIndex("_id"));
+                    query = "DELETE FROM " + table + " WHERE _id < " + lat_id + ";";
+                    db.execSQL(query);
+                    break;
+                }
+            }
+            c.moveToNext();
+        }
+
+        db.close();
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
     }
 }

@@ -44,24 +44,25 @@ public class GCMMessagerHandler extends IntentService {
     String mes;
     ArrayList<String> refreshmes;
     JSONObject tempjson;
-    int new_id;
-    int done;
-    Handler toasty=new Handler(){
+    Integer new_id = 0;
+    Integer done;
+    Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_LONG).show();
         }
     };
-    Handler h = new Handler() {
+    Handler prepost = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    String msg = "";
                     String serverUrl = NEW_URL;
                     MyDBHandler d = new MyDBHandler(getApplicationContext(), null, null, 1);
                     SQLiteDatabase db = d.getDB();
+
+                    //query to get latest id in the local db
                     String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
                     Cursor c = db.rawQuery(query, null);
                     //Move to the first row in your results
@@ -70,24 +71,22 @@ public class GCMMessagerHandler extends IntentService {
                     if (c.getCount() != 0) {
                         new_id = c.getInt(c.getColumnIndex("_id"));
                     }
+
                     Map<String, String> paramss = new HashMap<String, String>();
                     paramss.put("action_id", "2");
                     paramss.put("latest_msg_id", new_id + "");
-                    for (int i = 1; i <= 1; i++) {
-                        Log.d(TAG, "Attempt #" + i + " to register");
-                        try {
-                            posta(serverUrl, paramss);
-                            return msg;
-                        } catch (IOException e) {
-                            Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                        }
+
+                    try {
+                        updatepost(serverUrl, paramss);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed " + e);
                     }
-                    return msg;
+                    return null;
                 }
 
                 @Override
                 protected void onPostExecute(String msg) {
-                    done=1;
+                    done = 1;
                 }
             }.execute(null, null, null);
         }
@@ -110,11 +109,14 @@ public class GCMMessagerHandler extends IntentService {
         mes = extras.getString("data");
         if (mes == null) return;
         if (apprun == true) {
-            toasty.sendEmptyMessage(0);
+            toast.sendEmptyMessage(0);
         } else {
-            done=0;
-            h.sendEmptyMessage(0);
-            while(done==0);
+            done = 0;
+            //to get new messages and store in the local db
+            prepost.sendEmptyMessage(0);
+            //done is a syc variable which is set 1 only after processing is completed
+            //so notification is generated only after processing is completed that is done = 1
+            while (done == 0) ;
             generateNotification(getApplicationContext(), mes);
         }
 
@@ -126,7 +128,7 @@ public class GCMMessagerHandler extends IntentService {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification;
-        notification = new Notification(icon, "CampusComm", when);
+        notification = new Notification(icon, "CampusMessage", when);
         String title = message;
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
@@ -135,7 +137,7 @@ public class GCMMessagerHandler extends IntentService {
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
                 PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context,"CampusComm", message, intent);
+        notification.setLatestEventInfo(context, "CampusMessage", message, intent);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         // Play default notification sound
@@ -146,7 +148,7 @@ public class GCMMessagerHandler extends IntentService {
         notificationManager.notify(666, notification);
     }
 
-    public void clear() {
+    public void updateDB() {
         MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
         int sizeof = refreshmes.size();
         for (int i = 0; i < sizeof; i++) {
@@ -164,7 +166,7 @@ public class GCMMessagerHandler extends IntentService {
         }
     }
 
-    private void posta(String endpoint, Map<String, String> params)
+    private void updatepost(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;
@@ -204,26 +206,30 @@ public class GCMMessagerHandler extends IntentService {
             // handle the response
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "no_of";
 
+            //check for no_of in response
+            CharSequence charSequence = "no_of";
             String line = "";
             try {
                 while ((line = reader.readLine()) != null) {
                     if (line.contains(charSequence))
                         break;
                 }
-                Log.d("check", line);
+
+                //parse response json
                 JSONObject js = new JSONObject(line);
-                int l = Integer.parseInt(js.getString("no_of_messages"));
+                Integer l = Integer.parseInt(js.getString("no_of_messages"));
                 if (l == 0) return;
+
+                //load all message from a json array onto variable jsonArray
                 JSONArray jsonArray = new JSONArray(js.get("messages").toString());
                 refreshmes = new ArrayList<>();
-                int i = 0;
+                Integer i = 0;
                 for (; i < l; i++) {
                     tempjson = jsonArray.getJSONObject(i);
                     refreshmes.add(tempjson.toString());
                 }
-                clear();
+                updateDB();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

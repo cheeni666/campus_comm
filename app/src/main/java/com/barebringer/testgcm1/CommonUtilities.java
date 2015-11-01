@@ -1,10 +1,5 @@
 package com.barebringer.testgcm1;
 
-import android.content.Context;
-import android.content.Intent;
-
-import java.util.ArrayList;
-
 public final class CommonUtilities {
 
     // give your server registration url here
@@ -12,71 +7,14 @@ public final class CommonUtilities {
     static final String NEW_URL = "http://beerfactory.pragyan.org/~kousik/campuscomm/message.php";
 
     // Google project id
-    static final String SENDER_ID = "835229264934";
+    static final String PROJECT_NUMBER = "835229264934";
 
-    /**
-     * Tag used on log messages.
-     */
-    static final String TAG = "AndroidHive GCM";
+    static final String TAG = "Nitt";
+
     static boolean start1 = false, start2 = false, start3 = false, apprun = false;
-
-    static final String DISPLAY_MESSAGE_ACTION =
-            "com.androidhive.pushnotifications.DISPLAY_MESSAGE";
-
-    static final String EXTRA_MESSAGE = "message";
-
-    /**
-     * Notifies UI to display a message.
-     * <p/>
-     * This method is defined in the common helper because it's used both by
-     * the UI and the background service.
-     *
-     * @param context application's context.
-     * @param message message to be displayed.
-     */
-    static void displayMessage(Context context, String message) {
-        Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        context.sendBroadcast(intent);
-    }
-
-    static ArrayList<String> level1 = new ArrayList<String>() {
-        {
-            add("btech");
-            add("mtech");
-            add("select year");
-        }
-    };
-    static ArrayList<String> level2_2 = new ArrayList<String>() {
-        {
-            add("1");
-            add("2");
-            add("phd");
-            add("select dept");
-        }
-    };
-    static ArrayList<String> level2_1 = new ArrayList<String>() {
-        {
-            add("11");
-            add("12");
-            add("13");
-            add("14");
-            add("select dept");
-        }
-    };
-    static ArrayList<String> level3 = new ArrayList<String>() {
-        {
-            add("archi");
-            add("chemical");
-            add("civil");
-            add("cse");
-            add("ece");
-            add("eee");
-            add("ice");
-            add("mech");
-            add("meata");
-            add("prod");
-            add("done");
-        }
-    };
+    //apprun = true if app is running
+    //start1 = true if app is running and until all old messages are loaded in NITpost fragment
+    //start2 = true if app is running and until all old messages are loaded in Fest fragment
+    //start3 = true if app is running and until all old messages are loaded in Director fragment
+    //basically start1,start2,start3 are used to avoid multiple loading of data
 }

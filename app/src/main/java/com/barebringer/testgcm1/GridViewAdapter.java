@@ -17,8 +17,6 @@ public class GridViewAdapter extends ArrayAdapter<String>
     public ArrayList<String> tags;
     deletebuttonlistener listener;
 
-
-
     public interface deletebuttonlistener
     {
         public void onButtonclicklistener(String value);

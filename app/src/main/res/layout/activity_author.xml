@@ -1,87 +1,89 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.barebringer.campus_comm.Author"
     android:background="#215b70"
+    android:padding="10dp"
     android:paddingBottom="30dp"
-    android:padding="10dp">
+    tools:context="com.barebringer.campus_comm.Author">
 
     <TextView
+        android:id="@+id/author_username_text"
         android:layout_width="fill_parent"
         android:layout_height="80dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="USERNAME"
-        android:id="@+id/textView"
-        android:textSize="30dp"
-        android:layout_marginTop="77dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="77dp"
+        android:gravity="center_vertical"
+        android:text="USERNAME"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#ffffff"
-        android:gravity="center_vertical" />
+        android:textSize="30dp" />
 
     <EditText
+        android:id="@+id/author_username_edittext"
         android:layout_width="fill_parent"
         android:layout_height="75dp"
-        android:id="@+id/_user"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/author_username_text"
         android:layout_centerHorizontal="true"
-        android:textSize="50dp"
-        android:editable="false" />
+        android:textSize="50dp" />
 
     <TextView
+        android:id="@+id/author_password_text"
         android:layout_width="fill_parent"
         android:layout_height="80dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="PASSWORD"
-        android:id="@+id/textView2"
-        android:textSize="30dp"
-        android:textColor="#ffffff"
-        android:layout_below="@+id/_user"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:gravity="center_vertical" />
+        android:layout_below="@+id/author_username_edittext"
+        android:gravity="center_vertical"
+        android:text="PASSWORD"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ffffff"
+        android:textSize="30dp" />
 
     <EditText
+        android:id="@+id/author_password_edittext"
         android:layout_width="fill_parent"
         android:layout_height="75dp"
-        android:id="@+id/_password"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/author_password_text"
         android:layout_centerHorizontal="true"
-        android:textSize="40dp"
-        android:password="true" />
+        android:password="true"
+        android:textSize="40dp" />
 
     <Button
+        android:id="@+id/author_login_button"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:text="LOGIN"
-        android:id="@+id/button3"
-        android:textSize="30dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:onClick="submit"
+        android:alpha=".75"
         android:background="@drawable/shadow"
-        android:translationZ="10dp"
         android:elevation="10dp"
-        android:typeface="monospace"
-        android:alpha=".75" />
+        android:textColor="#ffffff"
+        android:onClick="submit"
+        android:text="LOGIN"
+        android:textSize="30dp"
+        android:translationZ="10dp"
+        android:typeface="monospace" />
 
     <TextView
+        android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="DETAILS"
-        android:id="@+id/textView3"
+        android:layout_alignLeft="@+id/author_username_text"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_alignStart="@+id/textView"
-        android:textSize="30dp"
+        android:layout_alignStart="@+id/author_username_text"
         android:gravity="center_horizontal"
+        android:text="DETAILS"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30dp"
         android:typeface="serif" />
+
     <ProgressBar
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:progressDrawable="@drawable/circular_progress_bar" />

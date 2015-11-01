@@ -41,40 +41,36 @@ import static com.barebringer.testgcm1.CommonUtilities.TAG;
 
 public class Fest extends Fragment {
 
-    private static final int MAX_ATTEMPTS = 1;
-
     private OnFragmentInteractionListener mListener;
     String username;
     View v;
     ArrayAdapter cheenisAdapter;
-
-    int update;
 
     ListView cheenisListView;
     SwipeRefreshLayout swipeRefreshLayout;
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tempjson;
 
-    Handler mtoast = new Handler() {
+    Handler empty_mes = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getActivity(), "No messages", Toast.LENGTH_SHORT).show();
         }
     };
-    Handler toast = new Handler() {
+    Handler load_mes = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getActivity(), "Loading", Toast.LENGTH_SHORT).show();
         }
     };
-    Handler failtoast = new Handler() {
+    Handler fail_mes = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Toast.makeText(getActivity(), "Failed connection", Toast.LENGTH_SHORT).show();
         }
     };
 
-    Handler handler = new Handler() {
+    Handler update_list = new Handler() {
         @Override
         public synchronized void handleMessage(Message msg) {
             getActivity().runOnUiThread(new Runnable() {
@@ -92,7 +88,7 @@ public class Fest extends Fragment {
         setRetainInstance(true);
     }
 
-    int old_id = 0, new_id = 0;
+    int new_id = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,17 +98,22 @@ public class Fest extends Fragment {
             return null;
         }
         v = inflater.inflate(R.layout.fragment_fest, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout_1);
-        username = mListener.getusername3();
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.fest_swipe_widget);
+        username = mListener.getusername_fest();
 
-        cheenisListView = (ListView) v.findViewById(R.id.listView_1);
+        cheenisListView = (ListView) v.findViewById(R.id.fest_list_list);
         cheenisAdapter = new CustomAdapter(getActivity(), posts);
         cheenisListView.setAdapter(cheenisAdapter);
 
+        //start2 is set 0 after the below statement hence the below statement gets executed only once
+        //in entire activity cycle
+        //the below function is to display all the local messages when the app starts
         if (start2) {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
+                    //query to get all messages sorted by latest recieved and then sent to upadte_list to
+                    //add in the list
                     MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
                     SQLiteDatabase db = d.getDB();
                     String query = "SELECT * FROM " + "fposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
@@ -123,7 +124,7 @@ public class Fest extends Fragment {
                     while (!c.isAfterLast()) {
                         if (c.getString(c.getColumnIndex("post")) != null) {
                             posts.add(c.getString(c.getColumnIndex("post")));
-                            handler.sendEmptyMessage(0);
+                            update_list.sendEmptyMessage(0);
                         }
                         c.moveToNext();
                     }
@@ -132,9 +133,9 @@ public class Fest extends Fragment {
 
                 @Override
                 protected void onPostExecute(String msg) {
+                    start2 = false;
                 }
             }.execute(null, null, null);
-            start2 = false;
         }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -144,9 +145,8 @@ public class Fest extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        update = 1;
-                        String msg = "";
                         String serverUrl = NEW_URL;
+
                         MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
                         SQLiteDatabase db = d.getDB();
                         String query = "SELECT * FROM " + "fposts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
@@ -154,26 +154,26 @@ public class Fest extends Fragment {
                         //Move to the first row in your results
                         c.moveToFirst();
                         db.close();
+
+                        //new_id contains the latest message id loaded
                         if (c.getCount() != 0) {
                             new_id = c.getInt(c.getColumnIndex("_id"));
                         }
+
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("action_id", "2");
                         paramss.put("latest_msg_id", new_id + "");
-                        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                            Log.d(TAG, "Attempt #" + i + " to register");
-                            try {
-                                posta(serverUrl, paramss);
-                                return msg;
-                            } catch (IOException e) {
-                                Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                                failtoast.sendEmptyMessage(0);
-                                if (i == MAX_ATTEMPTS) {
-                                    break;
-                                }
-                            }
+
+                        Log.d(TAG, "Attempt to register");
+                        try {
+                            posta(serverUrl, paramss);
+                            return null;
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to register on attempt " + e);
+                            fail_mes.sendEmptyMessage(0);
                         }
-                        return msg;
+
+                        return null;
                     }
 
                     @Override
@@ -199,11 +199,12 @@ public class Fest extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public String getusername3();
+        public String getusername_fest();
     }
 
-    public void clear() {
+    public void update_db() {
         MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
+        //adding all refresmes into the db
         int sizeof = refreshmes.size();
         for (int i = 0; i < sizeof; i++) {
             dbHandler.addName(refreshmes.get(i), "fposts");
@@ -214,7 +215,6 @@ public class Fest extends Fragment {
             throws IOException {
 
         URL url;
-        boolean wak = false;
         try {
             url = new URL(endpoint);
         } catch (MalformedURLException e) {
@@ -255,33 +255,40 @@ public class Fest extends Fragment {
 
             String line = "";
             try {
-                wak = true;
                 while ((line = reader.readLine()) != null) {
                     if (line.contains(charSequence))
                         break;
                 }
-                Log.d("check", line);
                 JSONObject js = new JSONObject(line);
                 int l = Integer.parseInt(js.getString("no_of_messages"));
                 if (l == 0) {
-                    mtoast.sendEmptyMessage(0);
+                    empty_mes.sendEmptyMessage(0);
                     return;
                 }
                 JSONArray jsonArray = new JSONArray(js.get("messages").toString());
+
+                //refreshmes is a temporary array to store all the messages which will
+                //be added to the db later
+                //tempjson is a temp json object which will be added to the list array(post) as and when
+                //we parse it
                 refreshmes = new ArrayList<>();
                 int i = 0;
                 for (; i < l; i++) {
                     tempjson = jsonArray.getJSONObject(i);
-                    if (update == 1 && tempjson.getString("sender").equals("fest")) {
+                    //we segregate fest messages
+                    if (tempjson.getString("sender").equals("fest")) {
                         refreshmes.add(tempjson.toString());
                         posts.add(0, tempjson.toString());
                     }
                 }
-                handler.sendEmptyMessage(0);
+                update_list.sendEmptyMessage(0);
+                update_db();
             } catch (IOException e) {
                 e.printStackTrace();
+                fail_mes.sendEmptyMessage(0);
             } catch (JSONException e) {
                 e.printStackTrace();
+                fail_mes.sendEmptyMessage(0);
             } finally {
                 try {
                     in.close();
@@ -295,18 +302,6 @@ public class Fest extends Fragment {
                 conn.disconnect();
             }
         }
-        if (wak) {
-            if (update == -1) {
-                try {
-                    old_id = Integer.parseInt(tempjson.getString("msg_id"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (update == 1) {
-                clear();
-            }
-        } else failtoast.sendEmptyMessage(0);
     }
 
 }

@@ -85,13 +85,17 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
         int cy = c.get(Calendar.YEAR);
         cy = cy % 100;
         level2 = new ArrayList<String>();
-        level2.add(""+cy);cy--;
-        level2.add(""+cy);cy--;
-        level2.add(""+cy);cy--;
-        level2.add(""+cy);cy--;
-        level2.add(""+cy);
+        level2.add("" + cy);
+        cy--;
+        level2.add("" + cy);
+        cy--;
+        level2.add("" + cy);
+        cy--;
+        level2.add("" + cy);
+        cy--;
+        level2.add("" + cy);
         firsttimeclick = true;
-        done=0;
+        done = 0;
         temparray = new ArrayList<String>();
         gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
         final GridViewAdapter.deletebuttonlistener listener = new GridViewAdapter.deletebuttonlistener() {
@@ -124,7 +128,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
                 else if (level == 3)
                     temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level3);
                 listView.setAdapter(temp_adapter);
-                done=1;
+                done = 1;
             }
         });
         chk.setOnLongClickListener(new View.OnLongClickListener() {
@@ -135,7 +139,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
             }
         });
         chk.setVisibility(View.GONE);
-        username = mListener.getusernamemes();
+        username = mListener.getusername_message();
         listView = (ListView) view.findViewById(R.id.tags_list);
 
         final JSONObject object = new JSONObject();
@@ -386,7 +390,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
     }
 
     public interface OnFragmentInteractionListener {
-        public String getusernamemes();
+        public String getusername_message();
     }
 
 }

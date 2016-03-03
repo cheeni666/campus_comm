@@ -43,7 +43,7 @@ import java.util.Random;
 
 import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
 
-public class MessageFragment extends Fragment implements GridViewAdapter.deletebuttonlistener {
+public class SendPostsFragment extends Fragment implements GridViewAdapter.deletebuttonlistener {
     public static String TAG = "TAG";
     GridView gridView;
     String username;
@@ -108,7 +108,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
             }
         };
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_message, container, false);
+        View view = inflater.inflate(R.layout.fragment_send_posts, container, false);
         gridView = (GridView) view.findViewById(R.id.gridview);
         editText = (EditText) view.findViewById(R.id.editText);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -139,7 +139,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
             }
         });
         chk.setVisibility(View.GONE);
-        username = mListener.getusername_message();
+        username = mListener.getUserNameSendPostsFragment();
         listView = (ListView) view.findViewById(R.id.tags_list);
 
         final JSONObject object = new JSONObject();
@@ -390,7 +390,7 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
     }
 
     public interface OnFragmentInteractionListener {
-        public String getusername_message();
+        public String getUserNameSendPostsFragment();
     }
 
 }

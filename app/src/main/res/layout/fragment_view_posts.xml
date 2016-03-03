@@ -7,12 +7,12 @@
 
 
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/fest_swipe_widget"
+        android:id="@+id/widgetSwipeViewPosts"
         android:layout_width="fill_parent"
         android:layout_height="450dp"
         android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
         android:layout_marginTop="10px"
+        android:layout_marginRight="10px"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true">
@@ -20,7 +20,7 @@
         <ListView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/fest_list_list"
+            android:id="@+id/listViewPostListViewPosts"
             android:divider="@android:color/transparent"
             android:dividerHeight="20px"
             android:smoothScrollbar="true"/>

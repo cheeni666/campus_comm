@@ -6,20 +6,14 @@ import java.util.Vector;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
-public class Posts extends ActionBarActivity implements ActionBar.TabListener,
-        MessageFragment.OnFragmentInteractionListener, NITpost.OnFragmentInteractionListener,
-        Fest.OnFragmentInteractionListener, Director.OnFragmentInteractionListener {
+public class AllFunctionsActivity extends ActionBarActivity implements ActionBar.TabListener,
+        SendPostsFragment.OnFragmentInteractionListener, ViewPostsFragment.OnFragmentInteractionListener{
 
     private PagerAdapter pagerAdapter;
     ActionBar actionBar;
@@ -31,21 +25,19 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //get username from shared mem
-        store = getSharedPreferences("testgcm1", Context.MODE_PRIVATE);
-        username = store.getString("username", null);
-        setContentView(R.layout.activity_posts);
+        store = getSharedPreferences("campuscomm", Context.MODE_PRIVATE);
+        username = store.getString("userName", null);
+        setContentView(R.layout.activity_all_functions);
 
         //initialise paging
         List<Fragment> fragments = new Vector<Fragment>();
-        fragments.add(Fragment.instantiate(this, NITpost.class.getName()));
-        fragments.add(Fragment.instantiate(this, Fest.class.getName()));
-        fragments.add(Fragment.instantiate(this, Director.class.getName()));
-        fragments.add(Fragment.instantiate(this, MessageFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, ViewPostsFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, SendPostsFragment.class.getName()));
         pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
 
         pager = (ViewPager) findViewById(R.id.viewpager);
         pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(4);
+        pager.setOffscreenPageLimit(2);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -78,9 +70,7 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,
     protected void onStop() {
         super.onStop();
         MyDBHandler db = new MyDBHandler(this, null, null, 1);
-        db.limitTabletoN("posts", 20);
-        db.limitTabletoN("fposts", 20);
-        db.limitTabletoN("dposts", 20);
+        db.limitTabletoN(100);
         finish();
     }
 
@@ -106,22 +96,13 @@ public class Posts extends ActionBarActivity implements ActionBar.TabListener,
     }
 
     @Override
-    public String getusername_message() {
+    public String getUserNameSendPostsFragment() {
         return username;
     }
 
     @Override
-    public String getusername_nitpost() {
+    public String getUserNameViewPostsFragment() {
         return username;
     }
 
-    @Override
-    public String getusername_fest() {
-        return username;
-    }
-
-    @Override
-    public String getusername_director() {
-        return username;
-    }
 }

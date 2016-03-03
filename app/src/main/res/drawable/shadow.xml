@@ -21,5 +21,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="#b1433e"/>
-    <corners android:radius="@dimen/fab_margin"/>
+    <corners android:radius="@dimen/card_shadow_height" />
 </shape><!-- From: file:/build/library-core/src/main/res/drawable/card_background.xml -->

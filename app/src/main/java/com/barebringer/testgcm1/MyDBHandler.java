@@ -15,7 +15,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "testgcm1.db";
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_NAME = "post";
+    public static final String TABLE = "Posts";
+    public static final String COLUMN_POST = "post";
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -24,37 +25,32 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE " + "posts" + "(" +
+        String query = "CREATE TABLE " + TABLE + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                COLUMN_NAME + " TEXT " +
-                ");";
-        db.execSQL(query);
-        query = "CREATE TABLE " + "fposts" + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                COLUMN_NAME + " TEXT " +
-                ");";
-        db.execSQL(query);
-        query = "CREATE TABLE " + "dposts" + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                COLUMN_NAME + " TEXT " +
+                COLUMN_POST + " TEXT " +
                 ");";
         db.execSQL(query);
     }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+    }
+
     //Add a new row to the database
-    public void addName(String json, String table) {
+    public void add(String jsonString) {
         String id = "";
         try {
-            JSONObject js = new JSONObject(json);
-            id = js.getString("msg_id");
+            JSONObject jsonEntry = new JSONObject(jsonString);
+            id = jsonEntry.getString("id");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, json);
+        values.put(COLUMN_POST, jsonString);
         values.put(COLUMN_ID, Integer.parseInt(id));
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(table, null, values);
+        db.insert(TABLE, null, values);
         db.close();
     }
 
@@ -63,33 +59,29 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //keeps only latest local N messages and deletes rest
-    public void limitTabletoN(String table,Integer N){
+    public void limitTabletoN(Integer N){
         SQLiteDatabase db = getWritableDatabase();
 
-        String query = "SELECT * FROM " + table + " WHERE 1 ORDER BY " + "_id" + " DESC;";
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
-        Integer lat_id = 0;
+        String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Integer counter = 0;
 
         //Iterate from latest message down by N messages and deletes the rest
-        while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex("post")) != null) {
-                lat_id++;
-                if (lat_id == N) {
-                    lat_id = c.getInt(c.getColumnIndex("_id"));
-                    query = "DELETE FROM " + table + " WHERE _id < " + lat_id + ";";
+        while (!cursor.isAfterLast()) {
+            if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
+                counter++;
+                if (counter == N) {
+                    counter = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                    query = "DELETE FROM " + TABLE + " WHERE "+ COLUMN_ID + " < " + counter + ";";
                     db.execSQL(query);
                     break;
                 }
             }
-            c.moveToNext();
+            cursor.moveToNext();
         }
 
         db.close();
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
 }

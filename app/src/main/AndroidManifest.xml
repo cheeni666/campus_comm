@@ -44,12 +44,12 @@
         <service android:name=".GCMMessagerHandler" />
 
         <activity
-            android:name=".Author"
+            android:name=".AuthorActivity"
             android:screenOrientation="portrait"
             android:label="Delta">
         </activity>
         <activity
-            android:name=".Posts"
+            android:name=".AllFunctionsActivity"
             android:theme="@style/CustomActionBarTheme"
             android:screenOrientation="portrait"
             android:label="Posts" >

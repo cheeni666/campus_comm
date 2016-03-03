@@ -9,12 +9,8 @@ public final class CommonUtilities {
     // Google project id
     static final String PROJECT_NUMBER = "835229264934";
 
-    static final String TAG = "Nitt";
+    static final String TAG = "CAMPUSCOMM";
 
-    static boolean start1 = false, start2 = false, start3 = false, apprun = false;
+    static boolean apprun = false;
     //apprun = true if app is running
-    //start1 = true if app is running and until all old messages are loaded in NITpost fragment
-    //start2 = true if app is running and until all old messages are loaded in Fest fragment
-    //start3 = true if app is running and until all old messages are loaded in Director fragment
-    //basically start1,start2,start3 are used to avoid multiple loading of data
 }

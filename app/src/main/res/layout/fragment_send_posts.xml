@@ -14,7 +14,7 @@
         android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp"
         android:id="@+id/gridview"/>
-    <com.melnykov.fab.FloatingActionButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fab"
@@ -22,10 +22,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        app:fab_colorNormal="@color/primarycolordark"
-        app:fab_colorPressed="@color/primarycolor"
-        android:src="@drawable/ic_content_add"
-        app:fab_colorRipple="@color/ripple_material_light"/>
+        android:src="@drawable/ic_content_add"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

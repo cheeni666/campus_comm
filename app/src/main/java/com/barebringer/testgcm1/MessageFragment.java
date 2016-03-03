@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -41,14 +41,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
 
 public class MessageFragment extends Fragment implements GridViewAdapter.deletebuttonlistener {
     public static String TAG = "TAG";
-    GridView gridView;
     String username;
+    GridView gridView;
     Integer done;
-    ArrayList<String> temparray;
+    ArrayList<String> tempArrayList;
     ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chemical", "prod", "ice", "civil", "meta", "archi"));
     ArrayList<String> level2 = new ArrayList<String>();
     ArrayList<String> level3 = new ArrayList<String>(Arrays.asList("btech", "mtech", "other"));
@@ -58,12 +58,12 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
     private OnFragmentInteractionListener mListener;
 
     ListView listView;
-    ArrayAdapter temp_adapter;
+    ArrayAdapter arrayAdapter;
     Boolean firsttimeclick;
     Integer level = 0;
     GridViewAdapter gridViewAdapter;
     FloatingActionButton fab;
-    Button chk;
+    Button buttonTags;
     EditText editText;
     Handler toasty = new Handler() {
         @Override
@@ -82,27 +82,27 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Calendar c = Calendar.getInstance();
-        int cy = c.get(Calendar.YEAR);
-        cy = cy % 100;
+        int year = c.get(Calendar.YEAR);
+        year = year % 100;
         level2 = new ArrayList<String>();
-        level2.add("" + cy);
-        cy--;
-        level2.add("" + cy);
-        cy--;
-        level2.add("" + cy);
-        cy--;
-        level2.add("" + cy);
-        cy--;
-        level2.add("" + cy);
+        level2.add("" + year);
+        year--;
+        level2.add("" + year);
+        year--;
+        level2.add("" + year);
+        year--;
+        level2.add("" + year);
+        year--;
+        level2.add("" + year);
         firsttimeclick = true;
         done = 0;
-        temparray = new ArrayList<String>();
-        gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
+        tempArrayList = new ArrayList<String>();
+        gridViewAdapter = new GridViewAdapter(getActivity(), tempArrayList);
         final GridViewAdapter.deletebuttonlistener listener = new GridViewAdapter.deletebuttonlistener() {
             @Override
             public void onButtonclicklistener(String value) {
-                if (temparray.contains(value))
-                    temparray.remove(value);
+                if (tempArrayList.contains(value))
+                    tempArrayList.remove(value);
                 gridViewAdapter.notifyDataSetChanged();
                 gridView.setAdapter(gridViewAdapter);
             }
@@ -112,33 +112,33 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
         gridView = (GridView) view.findViewById(R.id.gridview);
         editText = (EditText) view.findViewById(R.id.editText);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        chk = (Button) view.findViewById(R.id.chk);
-        chk.setOnClickListener(new View.OnClickListener() {
+        buttonTags = (Button) view.findViewById(R.id.button_tags);
+        buttonTags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listView.getVisibility() == View.GONE) listView.setVisibility(View.VISIBLE);
                 listView.setBackgroundResource(R.drawable.shadow);
                 level++;
                 if (level == 4) level = 1;
-                temp_adapter = null;
+                arrayAdapter = null;
                 if (level == 1)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
+                    arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
                 else if (level == 2)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level2);
+                    arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level2);
                 else if (level == 3)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level3);
-                listView.setAdapter(temp_adapter);
+                    arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level3);
+                listView.setAdapter(arrayAdapter);
                 done = 1;
             }
         });
-        chk.setOnLongClickListener(new View.OnLongClickListener() {
+        buttonTags.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 listView.setVisibility(View.GONE);
                 return true;
             }
         });
-        chk.setVisibility(View.GONE);
+        buttonTags.setVisibility(View.GONE);
         username = mListener.getusername_message();
         listView = (ListView) view.findViewById(R.id.tags_list);
 
@@ -156,65 +156,28 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
                 if (firsttimeclick) {
                     editText.setVisibility(View.VISIBLE);
                     gridView.setVisibility(View.VISIBLE);
-                    chk.setVisibility(View.VISIBLE);
+                    buttonTags.setVisibility(View.VISIBLE);
                     fab.setImageResource(R.drawable.ic_content_send);
                     firsttimeclick = false;
-                } else {
+                }
+                else {
                     final String s = editText.getText().toString();
                     {
                         if (done == 0)
-                            toasty.sendEmptyMessage(0);
+                            //toasty.sendEmptyMessage(0);
+                            Toast.makeText(getActivity(), "Failed!!!", Toast.LENGTH_LONG).show();
                         if (done == 1) {
                             if (s == null || s.equals("")) return;
                             editText.setText("");
-                            new AsyncTask<Void, Void, String>() {
-                                @Override
-                                protected String doInBackground(Void... params) {
-                                    String serverUrl = NEW_URL;
-                                    Map<String, String> paramss = new HashMap<String, String>();
-                                    paramss.put("action_id", "0");
-                                    paramss.put("message", s);
-                                    paramss.put("tags", object.toString());
-                                    paramss.put("sender", username);
-                                    long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                                    for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                                        Log.d(TAG, "Attempt #" + i + " to register");
-                                        try {
-                                            posta(serverUrl, paramss);
-                                            return s;
-                                        } catch (IOException e) {
-                                            Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                                            Toast.makeText(getActivity(), "Failed to connect!!", Toast.LENGTH_SHORT).show();
-                                            if (i == MAX_ATTEMPTS) {
-                                                break;
-                                            }
-                                            try {
-                                                Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                                                Thread.sleep(backoff);
-                                            } catch (InterruptedException e1) {
-                                                // Activity finished before we complete - exit.
-                                                Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                                                Thread.currentThread().interrupt();
-                                                return s;
-                                            }
-                                            // increase backoff exponentially
-                                            backoff *= 2;
-                                        }
-                                    }
-                                    return s;
-                                }
+                            //AsyncTask params s,object,username
 
-                                @Override
-                                protected void onPostExecute(String msg) {
-                                }
-                            }.execute(null, null, null);
                         }
                     }
                 }
             }
         });
 
-        temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
+        arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             ArrayList<String> temparray1 = new ArrayList<String>();
             ArrayList<String> temparray2 = new ArrayList<String>();
@@ -289,7 +252,50 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
         return view;
     }
 
-    private void posta(String endpoint, Map<String, String> params)
+    public class AsyncPostMessageTask extends AsyncTask<String,Void,String> {
+            @Override
+            protected String doInBackground(String... strings) {
+                String serverUrl = NEW_URL;
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("action_id", "0");
+                params.put("message", strings[1]);
+                params.put("tags", strings[2]);
+                params.put("sender", strings[3]);
+                long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+                for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                    Log.d(TAG, "Attempt #" + i + " to register");
+                    try {
+                        post(serverUrl, params);
+                        return strings[1];
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
+                        Toast.makeText(getActivity(), "Failed to connect!!", Toast.LENGTH_SHORT).show();
+                        if (i == MAX_ATTEMPTS) {
+                            break;
+                        }
+                        try {
+                            Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
+                            Thread.sleep(backoff);
+                        } catch (InterruptedException e1) {
+                            // Activity finished before we complete - exit.
+                            Log.d(TAG, "Thread interrupted: abort remaining retries!");
+                            Thread.currentThread().interrupt();
+                            return strings[1];
+                        }
+                        // increase backoff exponentially
+                        backoff *= 2;
+                    }
+                }
+                return strings[1];
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+
+            }
+    }
+
+    private void post(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;
@@ -375,8 +381,8 @@ public class MessageFragment extends Fragment implements GridViewAdapter.deleteb
 
     @Override
     public void onButtonclicklistener(String value) {
-        if (temparray.contains(value))
-            temparray.remove(value);
+        if (tempArrayList.contains(value))
+            tempArrayList.remove(value);
         Log.d(TAG, "Listview Count =" + listView.getCount());
         for (int i = 0; i < listView.getCount(); i++) {
             Log.d(TAG, "Listview Count =" + i);

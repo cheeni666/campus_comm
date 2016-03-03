@@ -13,7 +13,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
 public class AllFunctionsActivity extends ActionBarActivity implements ActionBar.TabListener,
-        SendPostsFragment.OnFragmentInteractionListener, ViewPostsFragment.OnFragmentInteractionListener{
+        SendPostsFragment.OnFragmentInteractionListener, ViewAllPostsFragment.OnFragmentInteractionListener,
+        ViewDirPostsFragment.OnFragmentInteractionListener,ViewFestPostsFragment.OnFragmentInteractionListener {
 
     private PagerAdapter pagerAdapter;
     ActionBar actionBar;
@@ -31,13 +32,15 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
 
         //initialise paging
         List<Fragment> fragments = new Vector<Fragment>();
-        fragments.add(Fragment.instantiate(this, ViewPostsFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, ViewAllPostsFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, ViewFestPostsFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, ViewDirPostsFragment.class.getName()));
         fragments.add(Fragment.instantiate(this, SendPostsFragment.class.getName()));
         pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
 
         pager = (ViewPager) findViewById(R.id.viewpager);
         pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(2);
+        pager.setOffscreenPageLimit(4);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -101,8 +104,17 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     }
 
     @Override
-    public String getUserNameViewPostsFragment() {
+    public String getUserNameViewAllPostsFragment() {
         return username;
     }
 
+    @Override
+    public String getUserNameViewFestPostsFragment() {
+        return username;
+    }
+
+    @Override
+    public String getUserNameViewDirPostsFragment() {
+        return username;
+    }
 }

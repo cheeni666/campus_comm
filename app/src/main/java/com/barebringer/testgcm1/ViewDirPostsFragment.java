@@ -35,11 +35,13 @@ import java.util.Map;
 
 import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
+import static com.barebringer.testgcm1.CommonUtilities.isFetchNew;
+import static com.barebringer.testgcm1.CommonUtilities.isFetchOld;
 import static com.barebringer.testgcm1.MyDBHandler.TABLE;
 import static com.barebringer.testgcm1.MyDBHandler.COLUMN_ID;
 import static com.barebringer.testgcm1.MyDBHandler.COLUMN_POST;
 
-public class ViewPostsFragment extends Fragment {
+public class ViewDirPostsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String username;
@@ -51,8 +53,6 @@ public class ViewPostsFragment extends Fragment {
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tags = null;
     Integer statusCode = 0;
-
-    int processFooter = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,11 +68,11 @@ public class ViewPostsFragment extends Fragment {
             return null;
         }
         //getting the view
-        viewFragment = inflater.inflate(R.layout.fragment_view_posts, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewPosts);
-        username = mListener.getUserNameViewPostsFragment();
+        viewFragment = inflater.inflate(R.layout.fragment_view_dir_posts, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewDirPosts);
+        username = mListener.getUserNameViewDirPostsFragment();
 
-        listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewPosts);
+        listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewDirPosts);
         listAdapter = new MessageAdapter(getActivity(), posts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
@@ -84,6 +84,11 @@ public class ViewPostsFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if(isFetchNew){
+                    Toast.makeText(getActivity(), "Already Updating", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                isFetchNew = true;
                 swipeRefreshLayout.setRefreshing(true);
                 new AsyncTask<Void, Void, String>() {
                     @Override
@@ -117,7 +122,8 @@ public class ViewPostsFragment extends Fragment {
                     @Override
                     protected void onPostExecute(String msg) {
                         swipeRefreshLayout.setRefreshing(false);
-                        if(statusCode != 200)
+                        isFetchNew = false;
+                        if (statusCode != 200)
                             Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
                         else displayPosts(tags);
                     }
@@ -129,27 +135,30 @@ public class ViewPostsFragment extends Fragment {
         footerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isFetchOld){
+                    Toast.makeText(getActivity(), "Already Updating", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                isFetchOld = true;
                 Toast.makeText(getActivity(), "Wait for a teensy bit", Toast.LENGTH_SHORT).show();
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        if (processFooter == 1) return "";
-                        processFooter = 1;
                         String serverUrl = NEW_URL;
                         statusCode = 0;
                         int oldId = 0;
                         //old_id gets the oldest message id loaded
-                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                            SQLiteDatabase db = d.getDB();
-                            String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
-                            Cursor c = db.rawQuery(query, null);
-                            //Move to the first row in your results
-                            c.moveToFirst();
-                            db.close();
-                            if (c.getCount() != 0) {
-                                oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
-                            }
-                        if(oldId == 0)return null;
+                        MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
+                        SQLiteDatabase db = d.getDB();
+                        String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
+                        Cursor c = db.rawQuery(query, null);
+                        //Move to the first row in your results
+                        c.moveToFirst();
+                        db.close();
+                        if (c.getCount() != 0) {
+                            oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
+                        }
+                        if (oldId == 0) return null;
 
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("oldest_msg_id", oldId + "");
@@ -165,8 +174,8 @@ public class ViewPostsFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(String msg) {
-                        processFooter = 0;
-                        if(statusCode != 200)
+                        isFetchOld = false;
+                        if (statusCode != 200)
                             Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
                         else displayPosts(tags);
                     }
@@ -194,7 +203,15 @@ public class ViewPostsFragment extends Fragment {
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
-                        if(isTagsPresent(tableData, tags))posts.add(tableData);
+                        if(isTagsPresent(tableData, tags)){
+                            try {
+                                JSONObject parsedTableData = new JSONObject(tableData);
+                                if(parsedTableData.getString("Sender").contentEquals("director"))
+                                    posts.add(tableData);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                     cursor.moveToNext();
                 }
@@ -239,7 +256,7 @@ public class ViewPostsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public String getUserNameViewPostsFragment();
+        public String getUserNameViewDirPostsFragment();
     }
 
     public void addToDB() {

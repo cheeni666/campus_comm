@@ -11,6 +11,7 @@ public final class CommonUtilities {
 
     static final String TAG = "CAMPUSCOMM";
 
+    static boolean isFetchNew = false;
+    static boolean isFetchOld = false;
     static boolean apprun = false;
-    //apprun = true if app is running
 }

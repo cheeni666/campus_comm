@@ -9,6 +9,8 @@ import android.content.Intent;
 
 import static com.barebringer.testgcm1.CommonUtilities.TAG;
 import static com.barebringer.testgcm1.CommonUtilities.apprun;
+import static com.barebringer.testgcm1.MyDBHandler.TABLE;
+import static com.barebringer.testgcm1.MyDBHandler.COLUMN_ID;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -43,8 +45,7 @@ public class GCMMessagerHandler extends IntentService {
 
     String mes;
     ArrayList<String> refreshmes;
-    JSONObject tempjson;
-    Integer new_id = 0;
+    Integer newId = 0;
     Integer done;
     Handler toast = new Handler() {
         @Override
@@ -52,34 +53,34 @@ public class GCMMessagerHandler extends IntentService {
             Toast.makeText(getApplicationContext(), "New messages available", Toast.LENGTH_LONG).show();
         }
     };
-    Handler prepost = new Handler() {
+    Handler setParams = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
+                    newId = 0;
                     String serverUrl = NEW_URL;
-                    MyDBHandler d = new MyDBHandler(getApplicationContext(), null, null, 1);
-                    SQLiteDatabase db = d.getDB();
+                    MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
+                    SQLiteDatabase db = myDBHandler.getDB();
 
                     //query to get latest id in the local db
-                    String query = "SELECT * FROM " + "posts" + " WHERE 1 ORDER BY " + "_id" + " DESC;";
+                    String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
                     Cursor c = db.rawQuery(query, null);
                     //Move to the first row in your results
                     c.moveToFirst();
                     db.close();
                     if (c.getCount() != 0) {
-                        new_id = c.getInt(c.getColumnIndex("_id"));
+                        newId = c.getInt(c.getColumnIndex("_id"));
                     }
 
                     Map<String, String> paramss = new HashMap<String, String>();
-                    paramss.put("action_id", "2");
-                    paramss.put("latest_msg_id", new_id + "");
+                    paramss.put("latest_msg_id", newId + "");
 
                     try {
-                        updatepost(serverUrl, paramss);
+                        httpPost(serverUrl, paramss);
                     } catch (IOException e) {
-                        Log.e(TAG, "Failed " + e);
+                        Log.d(TAG, "Failed " + e);
                     }
                     return null;
                 }
@@ -113,7 +114,7 @@ public class GCMMessagerHandler extends IntentService {
         } else {
             done = 0;
             //to get new messages and store in the local db
-            prepost.sendEmptyMessage(0);
+            setParams.sendEmptyMessage(0);
             //done is a syc variable which is set 1 only after processing is completed
             //so notification is generated only after processing is completed that is done = 1
             while (done == 0) ;
@@ -150,23 +151,12 @@ public class GCMMessagerHandler extends IntentService {
 
     public void updateDB() {
         MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
-        int sizeof = refreshmes.size();
-        for (int i = 0; i < sizeof; i++) {
-            try {
-                tempjson = new JSONObject(refreshmes.get(i));
-                if (tempjson.getString("sender").equals("fest")) {
-                    dbHandler.addName(refreshmes.get(i), "fposts");
-                } else if (tempjson.getString("sender").equals("director")) {
-                    dbHandler.addName(refreshmes.get(i), "dposts");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            dbHandler.addName(refreshmes.get(i), "posts");
+        for (int i = 0; i < refreshmes.size(); i++) {
+            dbHandler.add(refreshmes.get(i));
         }
     }
 
-    private void updatepost(String endpoint, Map<String, String> params)
+    private void httpPost(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;
@@ -207,27 +197,24 @@ public class GCMMessagerHandler extends IntentService {
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-            //check for no_of in response
-            CharSequence charSequence = "no_of";
-            String line = "";
+            String tmpline = "", response = "";
             try {
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains(charSequence))
-                        break;
+                while ((tmpline = reader.readLine()) != null) {
+                    response += tmpline;
                 }
 
                 //parse response json
-                JSONObject js = new JSONObject(line);
-                Integer l = Integer.parseInt(js.getString("no_of_messages"));
-                if (l == 0) return;
+                JSONObject jsonResponse = new JSONObject(response);
+                Integer status = jsonResponse.getInt("status");
+                if (status != 200) return;
 
                 //load all message from a json array onto variable jsonArray
-                JSONArray jsonArray = new JSONArray(js.get("messages").toString());
+                int l = jsonResponse.getJSONObject("data").getInt("no_of_messages");
+                JSONArray jsonData = jsonResponse.getJSONObject("data").getJSONArray("messages");
                 refreshmes = new ArrayList<>();
                 Integer i = 0;
                 for (; i < l; i++) {
-                    tempjson = jsonArray.getJSONObject(i);
-                    refreshmes.add(tempjson.toString());
+                    refreshmes.add(jsonData.getJSONObject(i).toString());
                 }
                 updateDB();
             } catch (IOException e) {

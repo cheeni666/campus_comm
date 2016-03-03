@@ -20,12 +20,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         butonEnter = (Button)findViewById(R.id.button_enter_main);
 
-        //Explained in common utilities
-        apprun = true;
-
         SharedPreferences store = getSharedPreferences("campuscomm", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = store.edit();
         editor.apply();
+
+        //to verify that app is running
+        apprun = true;
 
         //Check if user already logged in and  if yes, go to posts activity
         if (store.getString("userName", null) != null) {

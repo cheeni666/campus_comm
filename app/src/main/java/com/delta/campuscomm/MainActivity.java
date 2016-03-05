@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import static com.delta.campuscomm.CommonUtilities.apprun;
+import static com.delta.campuscomm.CommonUtilities.isAppRun;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         //to verify that app is running
-        apprun = true;
+        isAppRun = true;
 
         //Check if user already logged in and  if yes, go to posts activity
         if (store.getString("userName", null) != null) {

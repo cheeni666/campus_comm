@@ -22,7 +22,7 @@ public class MessageAdapter extends ArrayAdapter<String> {
     ArrayList<String> tags;
     Random random = new Random();
 
-    public MessageAdapter(Context context, ArrayList<String> resource,ArrayList<String> tags) {
+    public MessageAdapter(Context context, ArrayList<String> resource) {
         super(context, R.layout.layout_message_adapter, resource);
         cont = context;
         this.tags = tags;

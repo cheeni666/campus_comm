@@ -1,91 +1,79 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#215b70"
     android:padding="10dp"
     android:paddingBottom="30dp"
-    tools:context="com.barebringer.campus_comm.Author">
-
-    <TextView
-        android:id="@+id/author_username_text"
-        android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="77dp"
-        android:gravity="center_vertical"
-        android:text="USERNAME"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffff"
-        android:textSize="30dp" />
-
-    <EditText
-        android:id="@+id/author_username_edittext"
-        android:layout_width="fill_parent"
-        android:layout_height="75dp"
-        android:layout_below="@+id/author_username_text"
-        android:layout_centerHorizontal="true"
-        android:textSize="50dp" />
-
-    <TextView
-        android:id="@+id/author_password_text"
-        android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/author_username_edittext"
-        android:gravity="center_vertical"
-        android:text="PASSWORD"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffff"
-        android:textSize="30dp" />
-
-    <EditText
-        android:id="@+id/author_password_edittext"
-        android:layout_width="fill_parent"
-        android:layout_height="75dp"
-        android:layout_below="@+id/author_password_text"
-        android:layout_centerHorizontal="true"
-        android:password="true"
-        android:textSize="40dp" />
-
-    <Button
-        android:id="@+id/author_login_button"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:alpha=".75"
-        android:background="@drawable/shadow"
-        android:elevation="10dp"
-        android:textColor="#ffffff"
-        android:onClick="submit"
-        android:text="LOGIN"
-        android:textSize="30dp"
-        android:translationZ="10dp"
-        android:typeface="monospace" />
-
-    <TextView
-        android:id="@+id/textView3"
+    tools:context="com.delta.campuscomm.AuthorActivity">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/author_username_text"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/author_username_text"
-        android:gravity="center_horizontal"
-        android:text="DETAILS"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="30dp"
-        android:typeface="serif" />
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/textView_userName_author"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:gravity="center_vertical"
+            android:text="USERNAME"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="15sp" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:progressDrawable="@drawable/circular_progress_bar" />
+        <EditText
+            android:id="@+id/editText_userName_author"
+            android:layout_width="fill_parent"
+            android:background="@drawable/edittext_bg"
+            android:layout_height="45dp"
+            android:layout_below="@+id/textView_userName_author"
+            android:layout_centerHorizontal="true"
+            android:textSize="25sp" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/textView_password_author"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/editText_userName_author"
+            android:gravity="center_vertical"
+            android:text="PASSWORD"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/editText_password_author"
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/edittext_bg"
+            android:layout_below="@+id/textView_password_author"
+            android:layout_centerHorizontal="true"
+            android:password="true"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/button_login_author"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:alpha=".75"
+            android:background="@drawable/shadow"
+            android:elevation="10dp"
+            android:textColor="#ffffff"
+            android:onClick="submit"
+            android:text="LOGIN"
+            android:textSize="30dp"
+            android:translationZ="10dp"
+            android:typeface="monospace" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:progressDrawable="@drawable/circular_progress_bar" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

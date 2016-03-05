@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.content.ComponentName;

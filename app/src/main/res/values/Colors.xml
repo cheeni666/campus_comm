@@ -3,5 +3,8 @@
     <color name="primarycolor">#3F51B5</color>
     <color name="primarycolordark">#283593</color>
     <color name="accentcolor">#FF4081</color>
+    <color name="enterButtonColor">#1e5e63</color>
     <color name="black_overlay">#66000000</color>
+    <color name="colorCyan">#5becfc</color>
+    <color name="colorPureWhite">#fff</color>
 </resources>

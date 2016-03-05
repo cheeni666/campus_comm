@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.barebringer.testgcm1.CommonUtilities.SERVER_URL;
-import static com.barebringer.testgcm1.CommonUtilities.PROJECT_NUMBER;
-import static com.barebringer.testgcm1.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.SERVER_URL;
+import static com.delta.campuscomm.CommonUtilities.PROJECT_NUMBER;
+import static com.delta.campuscomm.CommonUtilities.TAG;
 
 public class AuthorActivity extends Activity {
     EditText editTextUsername, editTextPassword;
@@ -68,6 +68,8 @@ public class AuthorActivity extends Activity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO Change
+                startActivity(new Intent(AuthorActivity.this,AllFunctionsActivity.class));
                 username = editTextUsername.getText().toString();
                 password = editTextPassword.getText().toString();
                 if (username == null || username.equals("")) return;
@@ -89,7 +91,7 @@ public class AuthorActivity extends Activity {
                             isGcmSuccess = true;
                             setPostParams(AuthorActivity.this, regId);
                         } catch (IOException ex) {
-                            Log.d(CommonUtilities.TAG, "" + ex);
+                            Log.d(CommonUtilities.TAG, "GcmException: " + ex);
                         }
                         return null;
                     }
@@ -179,7 +181,7 @@ public class AuthorActivity extends Activity {
         byte[] bytes = body.getBytes();
         HttpURLConnection conn = null;
         try {
-            Log.e("URL", "> " + url);
+            Log.d("URL", "> " + url);
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
@@ -218,7 +220,7 @@ public class AuthorActivity extends Activity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.d(TAG, "" + e);
+                Log.d(TAG, " " + e);
             }
         } finally {
             if (conn != null) {

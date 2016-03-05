@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;

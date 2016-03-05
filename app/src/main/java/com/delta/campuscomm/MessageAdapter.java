@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,11 +19,13 @@ import java.util.Random;
 
 public class MessageAdapter extends ArrayAdapter<String> {
     private Context cont;
+    ArrayList<String> tags;
     Random random = new Random();
 
-    public MessageAdapter(Context context, ArrayList<String> resource) {
+    public MessageAdapter(Context context, ArrayList<String> resource,ArrayList<String> tags) {
         super(context, R.layout.layout_message_adapter, resource);
         cont = context;
+        this.tags = tags;
     }
 
     @Override

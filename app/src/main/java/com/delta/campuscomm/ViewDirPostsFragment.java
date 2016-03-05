@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,13 +33,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
-import static com.barebringer.testgcm1.CommonUtilities.TAG;
-import static com.barebringer.testgcm1.CommonUtilities.isFetchNew;
-import static com.barebringer.testgcm1.CommonUtilities.isFetchOld;
-import static com.barebringer.testgcm1.MyDBHandler.TABLE;
-import static com.barebringer.testgcm1.MyDBHandler.COLUMN_ID;
-import static com.barebringer.testgcm1.MyDBHandler.COLUMN_POST;
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.isFetchNew;
+import static com.delta.campuscomm.CommonUtilities.isFetchOld;
+import static com.delta.campuscomm.MyDBHandler.TABLE;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
 public class ViewDirPostsFragment extends Fragment {
 

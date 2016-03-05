@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import static com.barebringer.testgcm1.CommonUtilities.apprun;
+import static com.delta.campuscomm.CommonUtilities.apprun;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
         butonEnter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                butonEnter.setBackgroundColor(getResources().getColor(R.color.primarycolor));
                 Intent intent = new Intent(MainActivity.this, AuthorActivity.class);
-                finish();
                 startActivity(intent);
+                butonEnter.setBackgroundColor(getResources().getColor(R.color.enterButtonColor));
+                finish();
             }
         });
     }

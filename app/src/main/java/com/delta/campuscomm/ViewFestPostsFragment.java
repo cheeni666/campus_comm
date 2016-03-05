@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,15 +33,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
-import static com.barebringer.testgcm1.CommonUtilities.isFetchNew;
-import static com.barebringer.testgcm1.CommonUtilities.isFetchOld;
-import static com.barebringer.testgcm1.CommonUtilities.TAG;
-import static com.barebringer.testgcm1.MyDBHandler.TABLE;
-import static com.barebringer.testgcm1.MyDBHandler.COLUMN_ID;
-import static com.barebringer.testgcm1.MyDBHandler.COLUMN_POST;
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.isFetchNew;
+import static com.delta.campuscomm.CommonUtilities.isFetchOld;
+import static com.delta.campuscomm.MyDBHandler.TABLE;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
-public class ViewAllPostsFragment extends Fragment {
+public class ViewFestPostsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String username;
@@ -68,11 +68,11 @@ public class ViewAllPostsFragment extends Fragment {
             return null;
         }
         //getting the view
-        viewFragment = inflater.inflate(R.layout.fragment_view_all_posts, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewAllPosts);
-        username = mListener.getUserNameViewAllPostsFragment();
+        viewFragment = inflater.inflate(R.layout.fragment_view_fest_posts, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewFestPosts);
+        username = mListener.getUserNameViewFestPostsFragment();
 
-        listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewAllPosts);
+        listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewFestPosts);
         listAdapter = new MessageAdapter(getActivity(), posts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
@@ -123,7 +123,7 @@ public class ViewAllPostsFragment extends Fragment {
                     protected void onPostExecute(String msg) {
                         swipeRefreshLayout.setRefreshing(false);
                         isFetchNew = false;
-                        if(statusCode != 200)
+                        if (statusCode != 200)
                             Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
                         else displayPosts(tags);
                     }
@@ -148,17 +148,17 @@ public class ViewAllPostsFragment extends Fragment {
                         statusCode = 0;
                         int oldId = 0;
                         //old_id gets the oldest message id loaded
-                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                            SQLiteDatabase db = d.getDB();
-                            String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
-                            Cursor c = db.rawQuery(query, null);
-                            //Move to the first row in your results
-                            c.moveToFirst();
-                            db.close();
-                            if (c.getCount() != 0) {
-                                oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
-                            }
-                        if(oldId == 0)return null;
+                        MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
+                        SQLiteDatabase db = d.getDB();
+                        String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
+                        Cursor c = db.rawQuery(query, null);
+                        //Move to the first row in your results
+                        c.moveToFirst();
+                        db.close();
+                        if (c.getCount() != 0) {
+                            oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
+                        }
+                        if (oldId == 0) return null;
 
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("oldest_msg_id", oldId + "");
@@ -175,7 +175,7 @@ public class ViewAllPostsFragment extends Fragment {
                     @Override
                     protected void onPostExecute(String msg) {
                         isFetchOld = false;
-                        if(statusCode != 200)
+                        if (statusCode != 200)
                             Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
                         else displayPosts(tags);
                     }
@@ -203,7 +203,15 @@ public class ViewAllPostsFragment extends Fragment {
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
-                        if(isTagsPresent(tableData, tags))posts.add(tableData);
+                        if(isTagsPresent(tableData, tags)){
+                            try {
+                                JSONObject parsedTableData = new JSONObject(tableData);
+                                if(parsedTableData.getString("Sender").contentEquals("fest"))
+                                    posts.add(tableData);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                     cursor.moveToNext();
                 }
@@ -248,7 +256,7 @@ public class ViewAllPostsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public String getUserNameViewAllPostsFragment();
+        public String getUserNameViewFestPostsFragment();
     }
 
     public void addToDB() {

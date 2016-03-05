@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -7,10 +7,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import static com.barebringer.testgcm1.CommonUtilities.TAG;
-import static com.barebringer.testgcm1.CommonUtilities.apprun;
-import static com.barebringer.testgcm1.MyDBHandler.TABLE;
-import static com.barebringer.testgcm1.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.apprun;
+import static com.delta.campuscomm.MyDBHandler.TABLE;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,8 +38,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
-
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.isFetchNew;
+import static com.delta.campuscomm.CommonUtilities.isFetchOld;
+import static com.delta.campuscomm.MyDBHandler.TABLE;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
 public class GCMMessagerHandler extends IntentService {
 
@@ -138,7 +144,7 @@ public class GCMMessagerHandler extends IntentService {
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
                 PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context, "CampusMessage", message, intent);
+        //notification.setLatestEventInfo(context, "CampusMessage", message, intent);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         // Play default notification sound

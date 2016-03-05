@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,13 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.melnykov.fab.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,9 +39,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import static com.barebringer.testgcm1.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.NEW_URL;
 
-public class SendPostsFragment extends Fragment implements GridViewAdapter.deletebuttonlistener {
+public class SendPostsFragment extends Fragment implements GridViewAdapter.DeleteButtonListener {
     public static String TAG = "TAG";
     GridView gridView;
     String username;
@@ -52,18 +50,22 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
     ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chemical", "prod", "ice", "civil", "meta", "archi"));
     ArrayList<String> level2 = new ArrayList<String>();
     ArrayList<String> level3 = new ArrayList<String>(Arrays.asList("btech", "mtech", "other"));
+    ArrayList<String> list;
+    ArrayList<Boolean> stateLevel1 = new ArrayList<>();
+    ArrayList<Boolean> stateLevel2 = new ArrayList<>();
+    ArrayList<Boolean> stateLevel3 = new ArrayList<>();
     private static final int MAX_ATTEMPTS = 1;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
     private OnFragmentInteractionListener mListener;
 
     ListView listView;
-    ArrayAdapter temp_adapter;
+    ListAdapter listAdapter;
     Boolean firsttimeclick;
     Integer level = 0;
     GridViewAdapter gridViewAdapter;
+    FloatingActionButton fabTags;
     FloatingActionButton fab;
-    Button chk;
     EditText editText;
     Handler toasty = new Handler() {
         @Override
@@ -72,17 +74,38 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
         }
     };
 
+    public class MJSONArray extends JSONArray {
+
+        @Override
+        public Object remove(int index) {
+
+            JSONArray output = new JSONArray();
+            int len = this.length();
+            for (int i = 0; i < len; i++)   {
+                if (i != index) {
+                    try {
+                        output.put(this.get(i));
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            return output;
+            //return this; If you need the input array in case of a failed attempt to remove an item.
+        }
+    }
+
+    Calendar calendar;
+    int cy;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Calendar c = Calendar.getInstance();
-        int cy = c.get(Calendar.YEAR);
+    public void initialize() {
+        calendar = Calendar.getInstance();
+        cy = calendar.get(Calendar.YEAR);
         cy = cy % 100;
         level2 = new ArrayList<String>();
         level2.add("" + cy);
@@ -97,14 +120,41 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
         firsttimeclick = true;
         done = 0;
         temparray = new ArrayList<String>();
+        for(int i=0;i<10;i++)
+            stateLevel1.add(false);
+        for(int i=0;i<5;i++)
+            stateLevel2.add(false);
+        for(int i=0;i<3;i++)
+            stateLevel3.add(false);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        initialize();
         gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
-        final GridViewAdapter.deletebuttonlistener listener = new GridViewAdapter.deletebuttonlistener() {
+        final GridViewAdapter.DeleteButtonListener listener = new GridViewAdapter.DeleteButtonListener() {
             @Override
             public void onButtonclicklistener(String value) {
-                if (temparray.contains(value))
+                if (temparray.contains(value)) {
+                    Log.d("LOGGING",value);
                     temparray.remove(value);
+                }
+                for(int i=0;i<level1.size();i++) {
+                    if(level1.get(i).equals(value))
+                        stateLevel1.set(i,false);
+                }
+                for(int i=0;i<level2.size();i++) {
+                    if(level2.get(i).equals(value))
+                        stateLevel2.set(i,false);
+                }
+                for(int i=0;i<level3.size();i++) {
+                    if(level3.get(i).equals(value))
+                        stateLevel3.set(i,false);
+                }
+                listAdapter.notifyDataSetChanged();
                 gridViewAdapter.notifyDataSetChanged();
-                gridView.setAdapter(gridViewAdapter);
+                //gridView.setAdapter(gridViewAdapter);
             }
         };
         // Inflate the layout for this fragment
@@ -112,33 +162,37 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
         gridView = (GridView) view.findViewById(R.id.gridview);
         editText = (EditText) view.findViewById(R.id.editText);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        chk = (Button) view.findViewById(R.id.chk);
-        chk.setOnClickListener(new View.OnClickListener() {
+        fabTags = (FloatingActionButton) view.findViewById(R.id.button_tags);
+        fabTags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listView.getVisibility() == View.GONE) listView.setVisibility(View.VISIBLE);
-                listView.setBackgroundResource(R.drawable.shadow);
+                if (listView.getVisibility() == View.GONE)
+                    listView.setVisibility(View.VISIBLE);
                 level++;
-                if (level == 4) level = 1;
-                temp_adapter = null;
-                if (level == 1)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
-                else if (level == 2)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level2);
-                else if (level == 3)
-                    temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level3);
-                listView.setAdapter(temp_adapter);
+                if (level == 4)
+                    level = 1;
+                listAdapter = null;
+                if (level == 1) {
+                    listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level1,stateLevel1);
+                }
+                else if (level == 2) {
+                    listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level2, stateLevel2);
+                }
+                else if (level == 3) {
+                    listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level3, stateLevel3);
+                }
+                listView.setAdapter(listAdapter);
                 done = 1;
             }
         });
-        chk.setOnLongClickListener(new View.OnLongClickListener() {
+        fabTags.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 listView.setVisibility(View.GONE);
                 return true;
             }
         });
-        chk.setVisibility(View.GONE);
+        fabTags.setVisibility(View.GONE);
         username = mListener.getUserNameSendPostsFragment();
         listView = (ListView) view.findViewById(R.id.tags_list);
 
@@ -156,7 +210,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
                 if (firsttimeclick) {
                     editText.setVisibility(View.VISIBLE);
                     gridView.setVisibility(View.VISIBLE);
-                    chk.setVisibility(View.VISIBLE);
+                    fabTags.setVisibility(View.VISIBLE);
                     fab.setImageResource(R.drawable.ic_content_send);
                     firsttimeclick = false;
                 } else {
@@ -214,7 +268,9 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
             }
         });
 
-        temp_adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, level1);
+        listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level1,stateLevel1);
+        gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
+        gridView.setAdapter(gridViewAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             ArrayList<String> temparray1 = new ArrayList<String>();
             ArrayList<String> temparray2 = new ArrayList<String>();
@@ -223,11 +279,25 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 gridView.setVisibility(View.VISIBLE);
-                view.setBackgroundColor(Color.CYAN);
                 if (level == 1)
                     try {
-                        ArrayList<String> list = new ArrayList<String>();
-                        JSONArray array = object.getJSONArray("dept");
+                        list = new ArrayList<String>();
+                        if(stateLevel1.get(i)) {
+                            stateLevel1.set(i, false);
+                            JSONArray jsonArray = object.getJSONArray("dept");
+                            for(int t=0;t<jsonArray.length();t++) {
+                                Log.d("JSONARRAY", jsonArray.get(t).toString());
+                                if (jsonArray.get(t).toString().equals(level1.get(i)))
+                                    object.getJSONArray("dept").remove(t);
+                            }
+                            temparray.remove(level1.get(i));
+                        }
+                        else {
+                            stateLevel1.set(i, true);
+                            object.accumulate("dept", level1.get(i));
+                            temparray.add(level1.get(i));
+                        }
+                        /*JSONArray array = object.getJSONArray("dept");
                         if (array != null)
                             for (int k = 0; k < array.length(); k++)
                                 list.add(array.get(k).toString());
@@ -237,16 +307,20 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
                         }
                         for (int z = 0; z < temparray1.size(); z++)
                             if (!temparray.contains(temparray1.get(z)))
-                                temparray.add(temparray1.get(z));
-                        gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
+                                temparray.add(temparray1.get(z));*/
+                        listAdapter.notifyDataSetChanged();
+                        gridViewAdapter.notifyDataSetChanged();
                         gridViewAdapter.setButtonclicklistener(listener);
-                        gridView.setAdapter(gridViewAdapter);
                     } catch (Exception e) {
                         Log.d(TAG, "Exception " + e);
                     }
                 if (level == 2)
                     try {
-                        ArrayList<String> list = new ArrayList<String>();
+                        list = new ArrayList<String>();
+                        if(stateLevel2.get(i))
+                            stateLevel2.set(i,false);
+                        else
+                            stateLevel2.set(i,true);
                         JSONArray array = object.getJSONArray("year");
                         if (array != null)
                             for (int k = 0; k < array.length(); k++)
@@ -258,7 +332,8 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
                         for (int z = 0; z < temparray2.size(); z++)
                             if (!temparray.contains(temparray2.get(z)))
                                 temparray.add(temparray2.get(z));
-                        gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
+                        listAdapter.notifyDataSetChanged();
+                        gridViewAdapter.notifyDataSetChanged();
                         gridViewAdapter.setButtonclicklistener(listener);
                         gridView.setAdapter(gridViewAdapter);
                     } catch (JSONException e) {
@@ -266,7 +341,11 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
                     }
                 if (level == 3)
                     try {
-                        ArrayList<String> list = new ArrayList<String>();
+                        list = new ArrayList<String>();
+                        if(stateLevel3.get(i))
+                            stateLevel3.set(i,false);
+                        else
+                            stateLevel3.set(i,true);
                         JSONArray array = object.getJSONArray("degree");
                         if (array != null)
                             for (int k = 0; k < array.length(); k++)
@@ -278,7 +357,8 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
                         for (int z = 0; z < temparray3.size(); z++)
                             if (!temparray.contains(temparray3.get(z)))
                                 temparray.add(temparray3.get(z));
-                        gridViewAdapter = new GridViewAdapter(getActivity(), temparray);
+                        listAdapter.notifyDataSetChanged();
+                        gridViewAdapter.notifyDataSetChanged();
                         gridViewAdapter.setButtonclicklistener(listener);
                         gridView.setAdapter(gridViewAdapter);
                     } catch (JSONException e) {
@@ -377,16 +457,20 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.delet
     public void onButtonclicklistener(String value) {
         if (temparray.contains(value))
             temparray.remove(value);
-        Log.d(TAG, "Listview Count =" + listView.getCount());
-        for (int i = 0; i < listView.getCount(); i++) {
-            Log.d(TAG, "Listview Count =" + i);
-            if (listView.getItemAtPosition(i).toString().equals(value)) {
-                Log.d(TAG, "Changing Background color");
-                View view = listView.getAdapter().getView(i, null, listView);
-                view.setBackgroundColor(Color.WHITE);
-            }
+        for(int i=0;i<level1.size();i++) {
+            if(level1.get(i).equals(value))
+                stateLevel1.set(i,false);
         }
-
+        for(int i=0;i<level2.size();i++) {
+            if(level2.get(i).equals(value))
+                stateLevel2.set(i,false);
+        }
+        for(int i=0;i<level3.size();i++) {
+            if(level3.get(i).equals(value))
+                stateLevel3.set(i,false);
+        }
+        gridViewAdapter.notifyDataSetChanged();
+        listAdapter.notifyDataSetChanged();
     }
 
     public interface OnFragmentInteractionListener {

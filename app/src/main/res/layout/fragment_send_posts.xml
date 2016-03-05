@@ -1,10 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
-             android:layout_height="match_parent"
-    android:background="@drawable/backy">
+             android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
     <GridView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,7 +12,8 @@
         android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp"
         android:id="@+id/gridview"/>
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        app:elevation="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fab"
@@ -22,10 +21,10 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_content_add"/>
+        android:src="@drawable/ic_send"/>
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/tags_list"
         android:isScrollContainer="false"
         android:layout_below="@+id/gridview"
@@ -49,14 +48,17 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/fab"
-        android:layout_margin="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="20dp"
         android:layout_toStartOf="@+id/fab"/>
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        app:elevation="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="#"
-        android:id="@+id/chk"
+        android:id="@+id/button_tags"
         android:background="@drawable/shadow"
         android:layout_above="@+id/fab"
         android:layout_alignLeft="@+id/fab"
@@ -65,9 +67,8 @@
         android:layout_alignEnd="@+id/fab"
         android:textSize="40dp"
         android:layout_margin="2dp"
-        android:translationZ="5dp"
         android:height="5dp"
-        android:elevation="5dp"
+        android:src="@drawable/ic_hashtag"
         android:shadowColor="#010101" />
 
 </RelativeLayout>

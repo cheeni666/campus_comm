@@ -1,4 +1,4 @@
-package com.barebringer.testgcm1;
+package com.delta.campuscomm;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,21 +14,21 @@ import java.util.ArrayList;
 public class GridViewAdapter extends ArrayAdapter<String>
 {
     public static String TAG="TAG";
-    public ArrayList<String> tags;
-    deletebuttonlistener listener;
+    public ArrayList<String> stringArrayList;
+    DeleteButtonListener listener;
 
-    public interface deletebuttonlistener
+    public interface DeleteButtonListener
     {
         public void onButtonclicklistener(String value);
     }
-    public void setButtonclicklistener(deletebuttonlistener listener)
+    public void setButtonclicklistener(DeleteButtonListener listener)
     {
         this.listener=listener;
     }
     public GridViewAdapter(Context context, ArrayList<String> tags)
     {
         super(context, R.layout.gridadapter,tags);
-        this.tags=tags;
+        this.stringArrayList =tags;
     }
 
     @Override
@@ -36,20 +36,18 @@ public class GridViewAdapter extends ArrayAdapter<String>
     {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.gridadapter,parent,false);
+        Log.d(TAG,stringArrayList.toString());
         TextView textview = (TextView)view.findViewById(R.id.tag);
-        textview.setText(tags.get(position));
-        Button del_button = (Button)view.findViewById(R.id.delete_button);
-        del_button.setTag(position);
-        del_button.setOnClickListener(new View.OnClickListener()
-        {
+        textview.setText(stringArrayList.get(position));
+        Button buttonDelete = (Button)view.findViewById(R.id.delete_button);
+        buttonDelete.setTag(position);
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                int pos = (int)view.getTag();
-                listener.onButtonclicklistener(tags.get(pos));
+            public void onClick(View view) {
+                int pos = (int) view.getTag();
+                listener.onButtonclicklistener(stringArrayList.get(pos));
             }
         });
-        Log.d(TAG,"Item created "+position);
         return view;
     }
 }

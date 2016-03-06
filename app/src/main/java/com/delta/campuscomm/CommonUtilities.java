@@ -9,7 +9,7 @@ public final class CommonUtilities {
     // Google project id
     static final String PROJECT_NUMBER = "835229264934";
 
-    static final String TAG = "CAMPUSCOMM";
+    static final String TAG = "GlobalTag";
 
     static boolean isFetchNew = false;
     static boolean isFetchOld = false;

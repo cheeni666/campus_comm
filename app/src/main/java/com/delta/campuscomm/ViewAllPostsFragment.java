@@ -54,6 +54,7 @@ public class ViewAllPostsFragment extends Fragment {
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tags = null;
     Integer statusCode = 0;
+    MyDBHandler myDBHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class ViewAllPostsFragment extends Fragment {
         }catch (JSONException e) {
             Log.d("JSONEXception",e+"");
         }
+        myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
         listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewAllPosts);
         listAdapter = new MessageAdapter(getActivity(), tempPosts);
         listView.setAdapter(listAdapter);
@@ -103,17 +105,11 @@ public class ViewAllPostsFragment extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        Integer newId = 0;
+                        Integer newId = 1;
                         statusCode = 0;
                         String serverUrl = NEW_URL;
 
-                        MyDBHandler myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
-                        SQLiteDatabase db = myDBHandler.getDB();
-                        String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                        Cursor cursor = db.rawQuery(query, null);
-                        //Move to the first row in your results
-                        cursor.moveToFirst();
-                        db.close();
+                        Cursor cursor = myDBHandler.getEntries("DESC");
                         //newId contains the latest message id loaded
                         if (cursor.getCount() != 0) {
                             newId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
@@ -156,23 +152,17 @@ public class ViewAllPostsFragment extends Fragment {
                     protected String doInBackground(Void... params) {
                         String serverUrl = NEW_URL;
                         statusCode = 0;
-                        int oldId = 0;
+                        Integer oldId = 1;
                         //old_id gets the oldest message id loaded
-                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                            SQLiteDatabase db = d.getDB();
-                            String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
-                            Cursor c = db.rawQuery(query, null);
-                            //Move to the first row in your results
-                            c.moveToFirst();
-                            db.close();
-                            if (c.getCount() != 0) {
-                                oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
+                            Cursor cursor = myDBHandler.getEntries("ASC");
+                            if (cursor.getCount() != 0) {
+                                oldId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                             }
-                        if(oldId == 0)return null;
+                        if(oldId == 1)return null;
 
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("oldest_msg_id", oldId + "");
-                        paramss.put("no_of_msgs", "50");
+                        paramss.put("no_of_messages", "50");
 
                         try {
                             post(serverUrl, paramss);
@@ -203,13 +193,7 @@ public class ViewAllPostsFragment extends Fragment {
             protected String doInBackground(Void... params) {
                 //query to get all messages sorted by latest recieved and then sent to upadte_list to
                 //add in the list
-                MyDBHandler myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
-                SQLiteDatabase db = myDBHandler.getDB();
-                String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                Cursor cursor = db.rawQuery(query, null);
-                //Move to the first row in your results
-                cursor.moveToFirst();
-                db.close();
+                Cursor cursor = myDBHandler.getEntries("DESC");
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
@@ -272,10 +256,9 @@ public class ViewAllPostsFragment extends Fragment {
     }
 
     public void addToDB() {
-        MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
         //adding all refresmes into the db
         for (int i = 0; i < refreshmes.size(); i++) {
-            dbHandler.add(refreshmes.get(i));
+            myDBHandler.add(refreshmes.get(i));
         }
     }
 

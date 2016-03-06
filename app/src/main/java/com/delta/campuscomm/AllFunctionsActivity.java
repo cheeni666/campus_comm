@@ -28,6 +28,7 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     String username;
     SharedPreferences store;
     JSONObject tagsJSON;
+    MyDBHandler myDBHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         store = getSharedPreferences("campuscomm", Context.MODE_PRIVATE);
         username = store.getString("userName", null);
         setContentView(R.layout.activity_all_functions);
+        myDBHandler = new MyDBHandler(this, null, null, 1);
 
         //initialise paging
         List<Fragment> fragments = new Vector<Fragment>();
@@ -85,8 +87,7 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     @Override
     protected void onStop() {
         super.onStop();
-        MyDBHandler db = new MyDBHandler(this, null, null, 1);
-        db.limitTabletoN(100);
+        myDBHandler.limitTabletoN(100);
         finish();
     }
 

@@ -46,6 +46,7 @@ public class GCMMessagerHandler extends IntentService {
     ArrayList<String> refreshmes;
     Integer newId = 0;
     Integer done;
+    MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
     Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -60,17 +61,10 @@ public class GCMMessagerHandler extends IntentService {
                 protected String doInBackground(Void... params) {
                     newId = 0;
                     String serverUrl = NEW_URL;
-                    MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
-                    SQLiteDatabase db = myDBHandler.getDB();
 
-                    //query to get latest id in the local db
-                    String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                    Cursor c = db.rawQuery(query, null);
-                    //Move to the first row in your results
-                    c.moveToFirst();
-                    db.close();
-                    if (c.getCount() != 0) {
-                        newId = c.getInt(c.getColumnIndex("_id"));
+                    Cursor cursor = myDBHandler.getEntries("DESC");
+                    if (cursor.getCount() != 0) {
+                        newId = cursor.getInt(cursor.getColumnIndex("_id"));
                     }
 
                     Map<String, String> paramss = new HashMap<String, String>();

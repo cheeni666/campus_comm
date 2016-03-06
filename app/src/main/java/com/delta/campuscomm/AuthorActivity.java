@@ -103,8 +103,12 @@ public class AuthorActivity extends Activity {
                         SharedPreferences.Editor editor = store.edit();
                         editor.putString("gcmId", regId);
                         editor.apply();
-                        if (!isGcmSuccess)
+                        if (!isGcmSuccess){
                             Toast.makeText(getApplicationContext(), "GCM Registraion failed!", Toast.LENGTH_SHORT).show();
+                            spinner.setVisibility(View.GONE);
+                            editTextUsername.setEnabled(true);
+                            editTextPassword.setEnabled(true);
+                        }
                     }
                 }.execute(null, null, null);
             }
@@ -214,6 +218,7 @@ public class AuthorActivity extends Activity {
             try {
                 //Processing response
                 JSONObject jsRespose = new JSONObject(response);
+                Log.d(TAG, jsRespose.toString());
                 statusCode = jsRespose.getInt("status");
                 if (statusCode == 200) {
                     token = jsRespose.getJSONObject("data").getString("token");

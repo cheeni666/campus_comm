@@ -2,13 +2,16 @@ package com.delta.campuscomm;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,13 +22,11 @@ import java.util.Random;
 
 public class MessageAdapter extends ArrayAdapter<String> {
     private Context cont;
-    ArrayList<String> tags;
     Random random = new Random();
 
     public MessageAdapter(Context context, ArrayList<String> resource) {
         super(context, R.layout.layout_message_adapter, resource);
         cont = context;
-        this.tags = tags;
     }
 
     @Override
@@ -41,14 +42,25 @@ public class MessageAdapter extends ArrayAdapter<String> {
         TextView textViewMessage = (TextView) customview.findViewById(R.id.textViewMessageMessageAdapter);
         TextView textViewTime = (TextView) customview.findViewById(R.id.textViewTimeMessageAdapter);
         ImageView imageViewStrip = (ImageView) customview.findViewById(R.id.imageViewStripMessageAdapter);
-
+        GridView gridView = (GridView) customview.findViewById(R.id.gridView_message_adapter);
         int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
         imageViewStrip.setBackgroundColor(color);
         try {
             JSONObject jsonItem = new JSONObject(item);
             textViewUsername.setText(jsonItem.getString("Sender") + " posted");
             textViewMessage.setText(jsonItem.getString("Message"));
-
+            String tagsString = jsonItem.getString("tags");
+            JSONObject tagsObject = new JSONObject(tagsString);
+            JSONArray deptArray = tagsObject.getJSONArray("dept");
+            JSONArray yearArray = tagsObject.getJSONArray("year");
+            JSONArray degreeArray = tagsObject.getJSONArray("degree");
+            ArrayList<String> tags = new ArrayList<>();
+            for(int i=0;i<deptArray.length();i++)
+                tags.add(deptArray.get(i).toString());
+            for(int i=0;i<yearArray.length();i++)
+                tags.add(yearArray.get(i).toString());
+            for(int i=0;i<degreeArray.length();i++)
+                tags.add(degreeArray.get(i).toString());
             //Processing timestamp
             String[] timestamp = jsonItem.getString("created_at").split(" ");
             String[] date = timestamp[0].split("-");
@@ -66,6 +78,10 @@ public class MessageAdapter extends ArrayAdapter<String> {
             } else {
                 textViewTime.setText("today at " + time[0] + ":" + time[1]);
             }
+            TagsGridAdapter tagsGridAdapter = new TagsGridAdapter(getContext(),tags);
+            Log.d("count",tagsGridAdapter.getCount()+"");
+            gridView.setAdapter(tagsGridAdapter);
+            tagsGridAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }

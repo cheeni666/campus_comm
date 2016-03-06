@@ -1,58 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.delta.campuscomm" >
+<manifest package="com.delta.campuscomm"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <permission
         android:name="com.delta.campuscomm.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature"/>
 
-    <uses-permission android:name="com.delta.campuscomm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.delta.campuscomm.permission.C2D_MESSAGE"/>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="CampusComm"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:label="CampusComm"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:label="CampusComm" >
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <receiver
             android:name=".GCMBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
-                <category android:name="com.delta.campuscomm" />
+                <category android:name="com.delta.campuscomm"/>
             </intent-filter>
         </receiver>
 
-        <service android:name=".GCMMessagerHandler" />
+        <service android:name=".GCMMessagerHandler"/>
 
         <activity
             android:name=".AuthorActivity"
-            android:screenOrientation="portrait"
-            android:label="Delta">
+            android:label="Delta"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".AllFunctionsActivity"
-            android:theme="@style/CustomActionBarTheme"
+            android:label="Posts"
             android:screenOrientation="portrait"
-            android:label="Posts" >
+            android:theme="@style/CustomActionBarTheme">
+        </activity>
+        <activity
+            android:name=".FilterActivity"
+            android:label="@string/title_activity_filter"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

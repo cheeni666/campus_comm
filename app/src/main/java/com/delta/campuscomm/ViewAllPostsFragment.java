@@ -72,9 +72,18 @@ public class ViewAllPostsFragment extends Fragment {
         viewFragment = inflater.inflate(R.layout.fragment_view_all_posts, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewAllPosts);
         username = mListener.getUserNameViewAllPostsFragment();
-
+        //TODO CHAnge this
+        ArrayList<String> tempPosts = new ArrayList<>();
+        try {
+            JSONObject messagesJSON = new JSONObject(CommonUtilities.messagesJSON);
+            JSONArray messages = messagesJSON.getJSONObject("data").getJSONArray("messages");
+            for(int i=0;i<messages.length();i++)
+                tempPosts.add(messages.get(i).toString());
+        }catch (JSONException e) {
+            Log.d("JSONEXception",e+"");
+        }
         listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewAllPosts);
-        listAdapter = new MessageAdapter(getActivity(), posts);
+        listAdapter = new MessageAdapter(getActivity(), tempPosts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
         listView.addFooterView(footerView);
@@ -204,7 +213,8 @@ public class ViewAllPostsFragment extends Fragment {
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
-                        if(isTagsPresent(tableData, tags))posts.add(tableData);
+                        if(isTagsPresent(tableData, tags))
+                            posts.add(tableData);
                     }
                     cursor.moveToNext();
                 }

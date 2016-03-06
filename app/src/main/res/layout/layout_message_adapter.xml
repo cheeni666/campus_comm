@@ -14,9 +14,9 @@
         android:typeface="serif"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="20px"
-        android:layout_marginLeft="10px"
-        android:layout_marginTop="10px"
+        android:textSize="12sp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:textColor="#000000" />
     <TextView
         android:layout_width="wrap_content"
@@ -27,8 +27,8 @@
         android:typeface="sans"
         android:layout_below="@+id/textViewUsernameMessageAdapter"
         android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="20px"
-        android:layout_marginLeft="10px"
+        android:textSize="11sp"
+        android:layout_marginLeft="10dp"
         android:textColor="#000000" />
 
     <TextView
@@ -39,18 +39,25 @@
         android:id="@+id/textViewMessageMessageAdapter"
         android:layout_below="@+id/textViewTimeMessageAdapter"
         android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="40px"
-        android:layout_marginLeft="10px"
-        android:layout_marginBottom="10px"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
         android:textColor="#000000" />
 
     <ImageView
-        android:layout_width="10px"
+        android:layout_width="10dp"
         android:layout_height="wrap_content"
         android:id="@+id/imageViewStripMessageAdapter"
-        android:layout_marginLeft="5px"
+        android:layout_marginLeft="5dp"
         android:layout_alignTop="@+id/textViewUsernameMessageAdapter"
         android:layout_alignParentLeft="true"
         android:layout_alignBottom="@+id/textViewMessageMessageAdapter"
         android:background="#0044ff" />
+
+    <GridView
+        android:id="@+id/gridView_message_adapter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewMessageMessageAdapter"
+        android:layout_margin="5dp"/>
 </RelativeLayout>

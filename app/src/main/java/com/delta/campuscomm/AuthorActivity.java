@@ -69,7 +69,7 @@ public class AuthorActivity extends Activity {
             @Override
             public void onClick(View view) {
                 //TODO Change
-                startActivity(new Intent(AuthorActivity.this,AllFunctionsActivity.class));
+                //startActivity(new Intent(AuthorActivity.this,AllFunctionsActivity.class));
                 username = editTextUsername.getText().toString();
                 password = editTextPassword.getText().toString();
                 if (username == null || username.equals("")) return;
@@ -103,7 +103,7 @@ public class AuthorActivity extends Activity {
                         SharedPreferences.Editor editor = store.edit();
                         editor.putString("gcmId", regId);
                         editor.apply();
-                        if (isGcmSuccess)
+                        if (!isGcmSuccess)
                             Toast.makeText(getApplicationContext(), "GCM Registraion failed!", Toast.LENGTH_SHORT).show();
                     }
                 }.execute(null, null, null);

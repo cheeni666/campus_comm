@@ -13,7 +13,7 @@ public final class CommonUtilities {
 
     static boolean isFetchNew = false;
     static boolean isFetchOld = false;
-    static boolean apprun = false;
+    static boolean isAppRun = false;
 
     //TODO Remove these once api is working
     //All Dummy JSON Snippets

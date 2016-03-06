@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.apprun;
+import static com.delta.campuscomm.CommonUtilities.isAppRun;
 import static com.delta.campuscomm.MyDBHandler.TABLE;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
 
@@ -39,13 +39,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.delta.campuscomm.CommonUtilities.NEW_URL;
-import static com.delta.campuscomm.CommonUtilities.NEW_URL;
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isFetchNew;
-import static com.delta.campuscomm.CommonUtilities.isFetchOld;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
-import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
-import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
 public class GCMMessagerHandler extends IntentService {
 
@@ -115,7 +108,7 @@ public class GCMMessagerHandler extends IntentService {
 
         mes = extras.getString("data");
         if (mes == null) return;
-        if (apprun == true) {
+        if (isAppRun == true) {
             toast.sendEmptyMessage(0);
         } else {
             done = 0;

@@ -13,7 +13,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     Context cont;
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "testgcm1.db";
+    private static final String DATABASE_NAME = "campuscomm.db";
     public static final String COLUMN_ID = "_id";
     public static final String TABLE = "Posts";
     public static final String COLUMN_POST = "post";

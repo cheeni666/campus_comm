@@ -235,10 +235,19 @@ public class ViewAllPostsFragment extends Fragment {
             JSONArray names = tags.names();
             try {
                 JSONObject jsonData = new JSONObject(data);
-                JSONObject jsonDataTags = new JSONObject(jsonData.getString("tags"));
+                JSONObject dataTags = jsonData.getJSONObject("tags");
                 for(index = 0 ; index < names.length() ; index++){
                     String name = names.getString(index);
-                    if(!tags.getString(name).contentEquals(jsonDataTags.getString(name)))return false;
+                    JSONArray dataTagArray = dataTags.getJSONArray(name);
+                    JSONArray tagArray = tags.getJSONArray(name);
+                    for(int iteri = 0 ; iteri < tagArray.length() ; iteri++){
+                        boolean isFound = false;
+                        for(int iterj = 0 ; iterj < dataTagArray.length() ; iterj++){
+                            if(tagArray.getString(iteri).contentEquals(dataTagArray.getString(iterj)))
+                                isFound = true;
+                        }
+                        if(!isFound)return false;
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -101,7 +101,7 @@ public class FilterActivity extends AppCompatActivity {
                     } catch(JSONException e) {
                         Log.e("FilterActivityException", e + "");
                     }
-                    resultIntent.putExtra("tagsJSON","");
+                    resultIntent.putExtra("tagsJSON",tagsJSON.toString());
                     setResult(1,resultIntent);
                     finish();
                 }

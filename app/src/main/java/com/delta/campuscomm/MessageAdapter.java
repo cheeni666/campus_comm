@@ -21,12 +21,10 @@ import java.util.Random;
 
 
 public class MessageAdapter extends ArrayAdapter<String> {
-    private Context cont;
     Random random = new Random();
 
     public MessageAdapter(Context context, ArrayList<String> resource) {
         super(context, R.layout.layout_message_adapter, resource);
-        cont = context;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.delta.campuscomm;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,11 +33,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.delta.campuscomm.CommonUtilities.*;
-import static com.delta.campuscomm.CommonUtilities.NEW_URL;
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isFetchNew;
-import static com.delta.campuscomm.CommonUtilities.isFetchOld;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
@@ -54,12 +48,10 @@ public class ViewAllPostsFragment extends Fragment {
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tags = null;
     Integer statusCode = 0;
-    MyDBHandler myDBHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -73,24 +65,15 @@ public class ViewAllPostsFragment extends Fragment {
         viewFragment = inflater.inflate(R.layout.fragment_view_all_posts, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewAllPosts);
         username = mListener.getUserNameViewAllPostsFragment();
-        //TODO CHAnge this
-        ArrayList<String> tempPosts = new ArrayList<>();
-        try {
-            JSONObject messagesJSON = new JSONObject(CommonUtilities.messagesJSON);
-            JSONArray messages = messagesJSON.getJSONObject("data").getJSONArray("messages");
-            for(int i=0;i<messages.length();i++)
-                tempPosts.add(messages.get(i).toString());
-        }catch (JSONException e) {
-            Log.d("JSONEXception",e+"");
-        }
-        myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
+
         listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewAllPosts);
-        listAdapter = new MessageAdapter(getActivity(), tempPosts);
+        listAdapter = new MessageAdapter(getActivity(), posts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
         listView.addFooterView(footerView);
 
-        //the below function is to display all the local messages via null tags
+        tags = mListener.getTagsAllPostsFragment();
+
         displayPosts(tags);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -150,7 +133,7 @@ public class ViewAllPostsFragment extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        String serverUrl = NEW_URL;
+                        String serverUrl = OLD_URL;
                         statusCode = 0;
                         Integer oldId = 1;
                         //old_id gets the oldest message id loaded
@@ -197,8 +180,9 @@ public class ViewAllPostsFragment extends Fragment {
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
-                        if(isTagsPresent(tableData, tags))
+                        if(isTagsPresent(tableData, tags)){
                             posts.add(tableData);
+                        }
                     }
                     cursor.moveToNext();
                 }
@@ -207,7 +191,8 @@ public class ViewAllPostsFragment extends Fragment {
 
             @Override
             protected void onPostExecute(String msg) {
-                listAdapter.notifyDataSetChanged();
+                listAdapter = new MessageAdapter(getActivity(), posts);
+                listView.setAdapter(listAdapter);
             }
         }.execute(null, null, null);
     }
@@ -219,7 +204,7 @@ public class ViewAllPostsFragment extends Fragment {
             JSONArray names = tags.names();
             try {
                 JSONObject jsonData = new JSONObject(data);
-                JSONObject dataTags = jsonData.getJSONObject("tags");
+                JSONObject dataTags = new JSONObject(jsonData.getString("tags"));
                 for(index = 0 ; index < names.length() ; index++){
                     String name = names.getString(index);
                     JSONArray dataTagArray = dataTags.getJSONArray(name);
@@ -253,10 +238,12 @@ public class ViewAllPostsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getUserNameViewAllPostsFragment();
+        public JSONObject getTagsAllPostsFragment();
     }
 
     public void addToDB() {
         //adding all refresmes into the db
+        Log.d(TAG, "adding to db");
         for (int i = 0; i < refreshmes.size(); i++) {
             myDBHandler.add(refreshmes.get(i));
         }
@@ -309,7 +296,7 @@ public class ViewAllPostsFragment extends Fragment {
                     response += tmpline;
                 }
                 JSONObject jsonResponse = new JSONObject(response);
-
+                Log.d(TAG, response);
                 statusCode = jsonResponse.getInt("status");
                 if(statusCode == 200){
                     int l = jsonResponse.getJSONObject("data").getInt("no_of_messages");

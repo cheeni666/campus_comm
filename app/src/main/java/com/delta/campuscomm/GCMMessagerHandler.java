@@ -7,13 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isAppRun;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
-import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,9 +40,8 @@ public class GCMMessagerHandler extends IntentService {
 
     String mes;
     ArrayList<String> refreshmes;
-    Integer newId = 0;
+    Integer newId;
     Integer done;
-    MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
     Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -59,7 +54,7 @@ public class GCMMessagerHandler extends IntentService {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    newId = 0;
+                    newId = 1;
                     String serverUrl = NEW_URL;
 
                     Cursor cursor = myDBHandler.getEntries("DESC");
@@ -143,9 +138,8 @@ public class GCMMessagerHandler extends IntentService {
     }
 
     public void updateDB() {
-        MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
         for (int i = 0; i < refreshmes.size(); i++) {
-            dbHandler.add(refreshmes.get(i));
+            myDBHandler.add(refreshmes.get(i));
         }
     }
 

@@ -3,7 +3,6 @@ package com.delta.campuscomm;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,11 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.delta.campuscomm.CommonUtilities.NEW_URL;
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isFetchNew;
-import static com.delta.campuscomm.CommonUtilities.isFetchOld;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
+import static com.delta.campuscomm.CommonUtilities.*;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
@@ -53,12 +48,10 @@ public class ViewDirPostsFragment extends Fragment {
     ArrayList<String> posts = new ArrayList<String>(), refreshmes = new ArrayList<>();
     JSONObject tags = null;
     Integer statusCode = 0;
-    MyDBHandler myDBHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -73,15 +66,14 @@ public class ViewDirPostsFragment extends Fragment {
         swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewDirPosts);
         username = mListener.getUserNameViewDirPostsFragment();
 
-        myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
-
         listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewDirPosts);
         listAdapter = new MessageAdapter(getActivity(), posts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
         listView.addFooterView(footerView);
 
-        //the below function is to display all the local messages via null tags
+        tags = mListener.getTagsDirPostsFragment();
+
         displayPosts(tags);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -141,7 +133,7 @@ public class ViewDirPostsFragment extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        String serverUrl = NEW_URL;
+                        String serverUrl = OLD_URL;
                         statusCode = 0;
                         Integer oldId = 1;
                         //old_id gets the oldest message id loaded
@@ -205,7 +197,8 @@ public class ViewDirPostsFragment extends Fragment {
 
             @Override
             protected void onPostExecute(String msg) {
-                listAdapter.notifyDataSetChanged();
+                listAdapter = new MessageAdapter(getActivity(), posts);
+                listView.setAdapter(listAdapter);
             }
         }.execute(null, null, null);
     }
@@ -217,7 +210,7 @@ public class ViewDirPostsFragment extends Fragment {
             JSONArray names = tags.names();
             try {
                 JSONObject jsonData = new JSONObject(data);
-                JSONObject dataTags = jsonData.getJSONObject("tags");
+                JSONObject dataTags = new JSONObject(jsonData.getString("tags"));
                 for(index = 0 ; index < names.length() ; index++){
                     String name = names.getString(index);
                     JSONArray dataTagArray = dataTags.getJSONArray(name);
@@ -251,10 +244,12 @@ public class ViewDirPostsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getUserNameViewDirPostsFragment();
+        public JSONObject getTagsDirPostsFragment();
     }
 
     public void addToDB() {
         //adding all refresmes into the db
+        Log.d(TAG, "adding to db");
         for (int i = 0; i < refreshmes.size(); i++) {
             myDBHandler.add(refreshmes.get(i));
         }
@@ -307,7 +302,7 @@ public class ViewDirPostsFragment extends Fragment {
                     response += tmpline;
                 }
                 JSONObject jsonResponse = new JSONObject(response);
-
+                Log.d(TAG, response);
                 statusCode = jsonResponse.getInt("status");
                 if(statusCode == 200){
                     int l = jsonResponse.getJSONObject("data").getInt("no_of_messages");

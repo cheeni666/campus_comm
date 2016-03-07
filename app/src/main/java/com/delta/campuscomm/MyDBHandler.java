@@ -24,13 +24,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d(CommonUtilities.TAG, "db created");
         String query = "CREATE TABLE " + TABLE + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                COLUMN_POST + " TEXT " +
+                COLUMN_POST + " TEXT" +
                 ");";
         db.execSQL(query);
-        db.close();
-        Log.d(CommonUtilities.TAG, "DB created");
     }
 
     @Override
@@ -40,24 +39,25 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     //Add a new row to the database
     public void add(String jsonString) {
-        String id = "";
+        String id;
         try {
             JSONObject jsonEntry = new JSONObject(jsonString);
             id = jsonEntry.getString("id");
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_POST, jsonString);
+            values.put(COLUMN_ID, Integer.parseInt(id));
+            SQLiteDatabase db = getWritableDatabase();
+            db.insert(TABLE, null, values);
+            db.close();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_POST, jsonString);
-        values.put(COLUMN_ID, Integer.parseInt(id));
-        SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE, null, values);
-        db.close();
     }
 
     public Cursor getEntries(String opt) {
         String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " " + opt + ";";
         SQLiteDatabase db = getWritableDatabase();
+        if(db == null)return null;
         Cursor cursor = db.rawQuery(query, null);
         //Move to the first row in your results
         cursor.moveToFirst();

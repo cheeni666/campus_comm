@@ -1,7 +1,6 @@
 package com.delta.campuscomm;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -39,7 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import static com.delta.campuscomm.CommonUtilities.NEW_URL;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 public class SendPostsFragment extends Fragment implements GridViewAdapter.DeleteButtonListener {
     public static String TAG = "TAG";
@@ -54,9 +52,6 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
     ArrayList<Boolean> stateLevel1 = new ArrayList<>();
     ArrayList<Boolean> stateLevel2 = new ArrayList<>();
     ArrayList<Boolean> stateLevel3 = new ArrayList<>();
-    private static final int MAX_ATTEMPTS = 1;
-    private static final int BACKOFF_MILLI_SECONDS = 2000;
-    private static final Random random = new Random();
     private OnFragmentInteractionListener mListener;
 
     ListView listView;
@@ -67,12 +62,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
     FloatingActionButton fabTags;
     FloatingActionButton fab;
     EditText editText;
-    Handler toasty = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Toast.makeText(getActivity(), "Failed!!!", Toast.LENGTH_LONG).show();
-        }
-    };
+    Integer statusCode;
 
     public class MJSONArray extends JSONArray {
 
@@ -214,52 +204,35 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                     fab.setImageResource(R.drawable.ic_content_send);
                     firsttimeclick = false;
                 } else {
-                    final String s = editText.getText().toString();
+                    final String message = editText.getText().toString();
                     {
                         if (done == 0)
-                            toasty.sendEmptyMessage(0);
+                            Toast.makeText(getActivity(), "Cannot Send!!", Toast.LENGTH_SHORT).show();
                         if (done == 1) {
-                            if (s == null || s.equals("")) return;
+                            if (message == null || message.equals("")) return;
                             editText.setText("");
                             new AsyncTask<Void, Void, String>() {
                                 @Override
                                 protected String doInBackground(Void... params) {
-                                    String serverUrl = NEW_URL;
+                                    statusCode = 0;
+                                    String serverUrl = SEND_URL;
                                     Map<String, String> paramss = new HashMap<String, String>();
-                                    paramss.put("action_id", "0");
-                                    paramss.put("message", s);
+                                    paramss.put("message", message);
                                     paramss.put("tags", object.toString());
                                     paramss.put("sender", username);
-                                    long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                                    for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                                        Log.d(TAG, "Attempt #" + i + " to register");
                                         try {
                                             posta(serverUrl, paramss);
-                                            return s;
                                         } catch (IOException e) {
-                                            Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
                                             Toast.makeText(getActivity(), "Failed to connect!!", Toast.LENGTH_SHORT).show();
-                                            if (i == MAX_ATTEMPTS) {
-                                                break;
-                                            }
-                                            try {
-                                                Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                                                Thread.sleep(backoff);
-                                            } catch (InterruptedException e1) {
-                                                // Activity finished before we complete - exit.
-                                                Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                                                Thread.currentThread().interrupt();
-                                                return s;
-                                            }
-                                            // increase backoff exponentially
-                                            backoff *= 2;
                                         }
-                                    }
-                                    return s;
+                                    return message;
                                 }
 
                                 @Override
                                 protected void onPostExecute(String msg) {
+                                    if(statusCode == 200)
+                                        Toast.makeText(getActivity(), "Post Sent", Toast.LENGTH_SHORT).show();
+                                    else Toast.makeText(getActivity(), "Send Failed", Toast.LENGTH_SHORT).show();
                                 }
                             }.execute(null, null, null);
                         }
@@ -408,14 +381,17 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
             out.close();
             InputStream in = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            CharSequence charSequence = "status";
-            String line = null;
+            String tmpline = "", response = "";
             try {
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains(charSequence))
-                        break;
+                while ((tmpline = reader.readLine()) != null) {
+                        response += tmpline;
                 }
+                JSONObject js = new JSONObject(response);
+                statusCode = js.getInt("status");
+
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -423,14 +399,6 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            try {
-                JSONObject js = new JSONObject(line);
-                int status = Integer.parseInt(js.getString("status_code"));
-                if (status <= 0) toasty.sendEmptyMessage(0);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
         } finally {

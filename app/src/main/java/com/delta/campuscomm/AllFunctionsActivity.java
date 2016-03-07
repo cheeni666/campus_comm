@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.json.JSONObject;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 public class AllFunctionsActivity extends ActionBarActivity implements ActionBar.TabListener,
         SendPostsFragment.OnFragmentInteractionListener, ViewAllPostsFragment.OnFragmentInteractionListener,
@@ -27,7 +28,9 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     ViewPager pager;
     String username;
     SharedPreferences store;
-    JSONObject tagsJSON=null;
+    JSONObject tagsJSON = null;
+
+    List<Fragment> fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,24 +39,10 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         store = getSharedPreferences("campuscomm", Context.MODE_PRIVATE);
         username = store.getString("userName", null);
         setContentView(R.layout.activity_all_functions);
-
-        //initialise paging
-        List<Fragment> fragments = new Vector<Fragment>();
-        ViewAllPostsFragment viewAllPostsFragment = (ViewAllPostsFragment)Fragment.instantiate(this, ViewAllPostsFragment.class.getName());
-        viewAllPostsFragment.displayPosts(tagsJSON);
-        ViewDirPostsFragment viewDirPostsFragment = (ViewDirPostsFragment)Fragment.instantiate(this, ViewDirPostsFragment.class.getName());
-        viewDirPostsFragment.displayPosts(tagsJSON);
-        ViewFestPostsFragment viewFestPostsFragment = (ViewFestPostsFragment)Fragment.instantiate(this, ViewFestPostsFragment.class.getName());
-        viewFestPostsFragment.displayPosts(tagsJSON);
-        fragments.add(viewAllPostsFragment);
-        fragments.add(viewDirPostsFragment);
-        fragments.add(viewFestPostsFragment);
-        fragments.add(Fragment.instantiate(this, SendPostsFragment.class.getName()));
-        pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
-
         pager = (ViewPager) findViewById(R.id.viewpager);
-        pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(4);
+
+        updataAllFragments();
+
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -77,23 +66,15 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.addTab(actionBar.newTab().setTabListener(this).setText("ALL POSTS"));
-        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("FESTS"));
         actionBar.addTab(actionBar.newTab().setTabListener(this).setText("DIRECTOR"));
+        actionBar.addTab(actionBar.newTab().setTabListener(this).setText("FEST"));
         actionBar.addTab(actionBar.newTab().setTabListener(this).setText("POST"));
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        MyDBHandler db = new MyDBHandler(this, null, null, 1);
-        db.limitTabletoN(100);
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+    protected void onDestroy() {
+        super.onDestroy();
+        myDBHandler.limitTabletoN(100);
     }
 
     @Override
@@ -117,9 +98,7 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     }
 
     @Override
-    public String getUserNameViewAllPostsFragment() {
-        return username;
-    }
+    public String getUserNameViewAllPostsFragment() { return username; }
 
     @Override
     public String getUserNameViewFestPostsFragment() {
@@ -130,6 +109,21 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     public String getUserNameViewDirPostsFragment() {
         return username;
     }
+
+    @Override
+    public JSONObject getTagsFestPostsFragment() {
+        return tagsJSON;
+    }
+    @Override
+    public JSONObject getTagsAllPostsFragment() {
+        return tagsJSON;
+    }
+
+    @Override
+    public JSONObject getTagsDirPostsFragment() {
+        return tagsJSON;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -153,13 +147,31 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        this.onCreate(null);
         try {
             Log.d("tagsJSON",data.getStringExtra("tagsJSON"));
             tagsJSON = new JSONObject(data.getStringExtra("tagsJSON"));
         }catch (Exception e) {
             Log.d(CommonUtilities.TAG,e+"");
         }
+        this.updataAllFragments();
+    }
+
+    public void updataAllFragments(){
+        //initialise paging
+        List<Fragment> fragments = new Vector<Fragment>();
+        ViewAllPostsFragment viewAllPostsFragment = (ViewAllPostsFragment)Fragment.instantiate(this, ViewAllPostsFragment.class.getName());
+        //viewAllPostsFragment.displayPosts(tagsJSON);
+        ViewDirPostsFragment viewDirPostsFragment = (ViewDirPostsFragment)Fragment.instantiate(this, ViewDirPostsFragment.class.getName());
+        //viewDirPostsFragment.displayPosts(tagsJSON);
+        ViewFestPostsFragment viewFestPostsFragment = (ViewFestPostsFragment)Fragment.instantiate(this, ViewFestPostsFragment.class.getName());
+        //viewFestPostsFragment.displayPosts(tagsJSON);
+        fragments.add(viewAllPostsFragment);
+        fragments.add(viewDirPostsFragment);
+        fragments.add(viewFestPostsFragment);
+        fragments.add(Fragment.instantiate(this, SendPostsFragment.class.getName()));
+        pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
+        pager.setAdapter(pagerAdapter);
+        pager.setOffscreenPageLimit(4);
     }
 
 }

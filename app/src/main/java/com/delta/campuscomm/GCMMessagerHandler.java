@@ -7,13 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isAppRun;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
-import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +40,7 @@ public class GCMMessagerHandler extends IntentService {
 
     String mes;
     ArrayList<String> refreshmes;
-    Integer newId = 0;
+    Integer newId;
     Integer done;
     Handler toast = new Handler() {
         @Override
@@ -58,19 +54,12 @@ public class GCMMessagerHandler extends IntentService {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    newId = 0;
+                    newId = 1;
                     String serverUrl = NEW_URL;
-                    MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
-                    SQLiteDatabase db = myDBHandler.getDB();
 
-                    //query to get latest id in the local db
-                    String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                    Cursor c = db.rawQuery(query, null);
-                    //Move to the first row in your results
-                    c.moveToFirst();
-                    db.close();
-                    if (c.getCount() != 0) {
-                        newId = c.getInt(c.getColumnIndex("_id"));
+                    Cursor cursor = myDBHandler.getEntries("DESC");
+                    if (cursor.getCount() != 0) {
+                        newId = cursor.getInt(cursor.getColumnIndex("_id"));
                     }
 
                     Map<String, String> paramss = new HashMap<String, String>();
@@ -149,9 +138,8 @@ public class GCMMessagerHandler extends IntentService {
     }
 
     public void updateDB() {
-        MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
         for (int i = 0; i < refreshmes.size(); i++) {
-            dbHandler.add(refreshmes.get(i));
+            myDBHandler.add(refreshmes.get(i));
         }
     }
 

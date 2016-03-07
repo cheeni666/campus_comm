@@ -3,7 +3,6 @@ package com.delta.campuscomm;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,11 +33,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.delta.campuscomm.CommonUtilities.*;
-import static com.delta.campuscomm.CommonUtilities.NEW_URL;
-import static com.delta.campuscomm.CommonUtilities.TAG;
-import static com.delta.campuscomm.CommonUtilities.isFetchNew;
-import static com.delta.campuscomm.CommonUtilities.isFetchOld;
-import static com.delta.campuscomm.MyDBHandler.TABLE;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_ID;
 import static com.delta.campuscomm.MyDBHandler.COLUMN_POST;
 
@@ -58,7 +52,6 @@ public class ViewAllPostsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -72,23 +65,15 @@ public class ViewAllPostsFragment extends Fragment {
         viewFragment = inflater.inflate(R.layout.fragment_view_all_posts, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) viewFragment.findViewById(R.id.widgetSwipeViewAllPosts);
         username = mListener.getUserNameViewAllPostsFragment();
-        //TODO CHAnge this
-        ArrayList<String> tempPosts = new ArrayList<>();
-        try {
-            JSONObject messagesJSON = new JSONObject(CommonUtilities.messagesJSON);
-            JSONArray messages = messagesJSON.getJSONObject("data").getJSONArray("messages");
-            for(int i=0;i<messages.length();i++)
-                tempPosts.add(messages.get(i).toString());
-        }catch (JSONException e) {
-            Log.d("JSONEXception",e+"");
-        }
+
         listView = (ListView) viewFragment.findViewById(R.id.listViewPostListViewAllPosts);
-        listAdapter = new MessageAdapter(getActivity(), tempPosts);
+        listAdapter = new MessageAdapter(getActivity(), posts);
         listView.setAdapter(listAdapter);
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_message_footer, null, false);
         listView.addFooterView(footerView);
 
-        //the below function is to display all the local messages via null tags
+        tags = mListener.getTagsAllPostsFragment();
+
         displayPosts(tags);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -103,17 +88,11 @@ public class ViewAllPostsFragment extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        Integer newId = 0;
-                        statusCode = 0;
+                        Integer newId = 1;
+                        statusCode = -1;
                         String serverUrl = NEW_URL;
 
-                        MyDBHandler myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
-                        SQLiteDatabase db = myDBHandler.getDB();
-                        String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                        Cursor cursor = db.rawQuery(query, null);
-                        //Move to the first row in your results
-                        cursor.moveToFirst();
-                        db.close();
+                        Cursor cursor = myDBHandler.getEntries("DESC");
                         //newId contains the latest message id loaded
                         if (cursor.getCount() != 0) {
                             newId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
@@ -133,9 +112,12 @@ public class ViewAllPostsFragment extends Fragment {
                     protected void onPostExecute(String msg) {
                         swipeRefreshLayout.setRefreshing(false);
                         isFetchNew = false;
-                        if(statusCode != 200)
-                            Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
-                        else displayPosts(tags);
+                        if(statusCode != 200){
+                            if(statusCode == -1)
+                                Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getActivity(), "No new Msgs", Toast.LENGTH_SHORT).show();
+                        }
+                        displayPosts(tags);
                     }
                 }.execute(null, null, null);
 
@@ -154,25 +136,19 @@ public class ViewAllPostsFragment extends Fragment {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
-                        String serverUrl = NEW_URL;
-                        statusCode = 0;
-                        int oldId = 0;
+                        String serverUrl = OLD_URL;
+                        statusCode = -1;
+                        Integer oldId = 1;
                         //old_id gets the oldest message id loaded
-                            MyDBHandler d = new MyDBHandler(getActivity(), null, null, 1);
-                            SQLiteDatabase db = d.getDB();
-                            String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " ASC;";
-                            Cursor c = db.rawQuery(query, null);
-                            //Move to the first row in your results
-                            c.moveToFirst();
-                            db.close();
-                            if (c.getCount() != 0) {
-                                oldId = c.getInt(c.getColumnIndex(COLUMN_ID));
+                            Cursor cursor = myDBHandler.getEntries("ASC");
+                            if (cursor.getCount() != 0) {
+                                oldId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                             }
-                        if(oldId == 0)return null;
+                        if(oldId == 1)return null;
 
                         Map<String, String> paramss = new HashMap<String, String>();
                         paramss.put("oldest_msg_id", oldId + "");
-                        paramss.put("no_of_msgs", "50");
+                        paramss.put("no_of_messages", "50");
 
                         try {
                             post(serverUrl, paramss);
@@ -185,9 +161,12 @@ public class ViewAllPostsFragment extends Fragment {
                     @Override
                     protected void onPostExecute(String msg) {
                         isFetchOld = false;
-                        if(statusCode != 200)
-                            Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
-                        else displayPosts(tags);
+                        if(statusCode != 200){
+                            if(statusCode == -1)
+                                Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getActivity(), "No old Msgs", Toast.LENGTH_SHORT).show();
+                        }
+                        displayPosts(tags);
                     }
                 }.execute(null, null, null);
             }
@@ -203,18 +182,13 @@ public class ViewAllPostsFragment extends Fragment {
             protected String doInBackground(Void... params) {
                 //query to get all messages sorted by latest recieved and then sent to upadte_list to
                 //add in the list
-                MyDBHandler myDBHandler = new MyDBHandler(getActivity(), null, null, 1);
-                SQLiteDatabase db = myDBHandler.getDB();
-                String query = "SELECT * FROM " + TABLE + " WHERE 1 ORDER BY " + COLUMN_ID + " DESC;";
-                Cursor cursor = db.rawQuery(query, null);
-                //Move to the first row in your results
-                cursor.moveToFirst();
-                db.close();
+                Cursor cursor = myDBHandler.getEntries("DESC");
                 while (!cursor.isAfterLast()) {
                     if (cursor.getString(cursor.getColumnIndex(COLUMN_POST)) != null) {
                         String tableData = cursor.getString(cursor.getColumnIndex(COLUMN_POST));
-                        if(isTagsPresent(tableData, tags))
+                        if(isTagsPresent(tableData, tags)){
                             posts.add(tableData);
+                        }
                     }
                     cursor.moveToNext();
                 }
@@ -223,7 +197,8 @@ public class ViewAllPostsFragment extends Fragment {
 
             @Override
             protected void onPostExecute(String msg) {
-                listAdapter.notifyDataSetChanged();
+                listAdapter = new MessageAdapter(getActivity(), posts);
+                listView.setAdapter(listAdapter);
             }
         }.execute(null, null, null);
     }
@@ -235,7 +210,7 @@ public class ViewAllPostsFragment extends Fragment {
             JSONArray names = tags.names();
             try {
                 JSONObject jsonData = new JSONObject(data);
-                JSONObject dataTags = jsonData.getJSONObject("tags");
+                JSONObject dataTags = new JSONObject(jsonData.getString("tags"));
                 for(index = 0 ; index < names.length() ; index++){
                     String name = names.getString(index);
                     JSONArray dataTagArray = dataTags.getJSONArray(name);
@@ -269,13 +244,14 @@ public class ViewAllPostsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public String getUserNameViewAllPostsFragment();
+        public JSONObject getTagsAllPostsFragment();
     }
 
     public void addToDB() {
-        MyDBHandler dbHandler = new MyDBHandler(getActivity(), null, null, 1);
         //adding all refresmes into the db
+        Log.d(TAG, "adding to db");
         for (int i = 0; i < refreshmes.size(); i++) {
-            dbHandler.add(refreshmes.get(i));
+            myDBHandler.add(refreshmes.get(i));
         }
     }
 
@@ -326,7 +302,7 @@ public class ViewAllPostsFragment extends Fragment {
                     response += tmpline;
                 }
                 JSONObject jsonResponse = new JSONObject(response);
-
+                Log.d(TAG, response);
                 statusCode = jsonResponse.getInt("status");
                 if(statusCode == 200){
                     int l = jsonResponse.getJSONObject("data").getInt("no_of_messages");

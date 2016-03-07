@@ -31,9 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.delta.campuscomm.CommonUtilities.SERVER_URL;
-import static com.delta.campuscomm.CommonUtilities.PROJECT_NUMBER;
-import static com.delta.campuscomm.CommonUtilities.TAG;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 public class AuthorActivity extends Activity {
     EditText editTextUsername, editTextPassword;
@@ -103,8 +101,12 @@ public class AuthorActivity extends Activity {
                         SharedPreferences.Editor editor = store.edit();
                         editor.putString("gcmId", regId);
                         editor.apply();
-                        if (!isGcmSuccess)
+                        if (!isGcmSuccess){
                             Toast.makeText(getApplicationContext(), "GCM Registraion failed!", Toast.LENGTH_SHORT).show();
+                            spinner.setVisibility(View.GONE);
+                            editTextUsername.setEnabled(true);
+                            editTextPassword.setEnabled(true);
+                        }
                     }
                 }.execute(null, null, null);
             }
@@ -117,7 +119,7 @@ public class AuthorActivity extends Activity {
             @Override
             protected String doInBackground(Void... params) {
                 statusCode = 0;
-                String serverUrl = SERVER_URL;
+                String serverUrl = REGISTER_URL;
 
                 Map<String, String> paramss = new HashMap<String, String>();
                 paramss.put("username", username);
@@ -214,6 +216,7 @@ public class AuthorActivity extends Activity {
             try {
                 //Processing response
                 JSONObject jsRespose = new JSONObject(response);
+                Log.d(TAG, jsRespose.toString());
                 statusCode = jsRespose.getInt("status");
                 if (statusCode == 200) {
                     token = jsRespose.getJSONObject("data").getString("token");

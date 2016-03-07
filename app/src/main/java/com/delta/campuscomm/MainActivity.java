@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import static com.delta.campuscomm.CommonUtilities.isAppRun;
+import static com.delta.campuscomm.CommonUtilities.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         //to verify that app is running
         isAppRun = true;
+
+        myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
 
         //Check if user already logged in and  if yes, go to posts activity
         if (store.getString("userName", null) != null) {

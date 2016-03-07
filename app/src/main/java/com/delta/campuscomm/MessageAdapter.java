@@ -54,11 +54,11 @@ public class MessageAdapter extends ArrayAdapter<String> {
             JSONArray degreeArray = tagsObject.getJSONArray("degree");
             ArrayList<String> tags = new ArrayList<>();
             for(int i=0;i<deptArray.length();i++)
-                tags.add(deptArray.get(i).toString());
+                tags.add(deptArray.getString(i));
             for(int i=0;i<yearArray.length();i++)
-                tags.add(yearArray.get(i).toString());
+                tags.add(yearArray.getString(i));
             for(int i=0;i<degreeArray.length();i++)
-                tags.add(degreeArray.get(i).toString());
+                tags.add(degreeArray.getString(i));
             //Processing timestamp
             String[] timestamp = jsonItem.getString("created_at").split(" ");
             String[] date = timestamp[0].split("-");

@@ -81,6 +81,7 @@ public class ViewDirPostsFragment extends Fragment {
             public void onRefresh() {
                 if(isFetchNew){
                     Toast.makeText(getActivity(), "Already Updating", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
                     return;
                 }
                 isFetchNew = true;

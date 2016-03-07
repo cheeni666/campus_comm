@@ -27,7 +27,7 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     ViewPager pager;
     String username;
     SharedPreferences store;
-    JSONObject tagsJSON;
+    JSONObject tagsJSON=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

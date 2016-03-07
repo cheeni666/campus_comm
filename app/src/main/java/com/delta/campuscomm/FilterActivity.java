@@ -92,9 +92,9 @@ public class FilterActivity extends AppCompatActivity {
                         for(int i=0;i<level2.size();i++)
                             if(stateLevel2.get(i))
                                 year.put(level2.get(i));
-                        for(int i=0;i<level1.size();i++)
-                            if(stateLevel1.get(i))
-                                degree.put(level1.get(i));
+                        for(int i=0;i<level3.size();i++)
+                            if(stateLevel3.get(i))
+                                degree.put(level3.get(i));
                         tagsJSON.accumulate("dept",dept);
                         tagsJSON.accumulate("year",year);
                         tagsJSON.accumulate("degree",degree);

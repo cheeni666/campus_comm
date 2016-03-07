@@ -89,7 +89,7 @@ public class ViewAllPostsFragment extends Fragment {
                     @Override
                     protected String doInBackground(Void... params) {
                         Integer newId = 1;
-                        statusCode = 0;
+                        statusCode = -1;
                         String serverUrl = NEW_URL;
 
                         Cursor cursor = myDBHandler.getEntries("DESC");
@@ -112,9 +112,12 @@ public class ViewAllPostsFragment extends Fragment {
                     protected void onPostExecute(String msg) {
                         swipeRefreshLayout.setRefreshing(false);
                         isFetchNew = false;
-                        if(statusCode != 200)
-                            Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
-                        else displayPosts(tags);
+                        if(statusCode != 200){
+                            if(statusCode == -1)
+                                Toast.makeText(getActivity(), "Failed to fetch new Msgs", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getActivity(), "No new Msgs", Toast.LENGTH_SHORT).show();
+                        }
+                        displayPosts(tags);
                     }
                 }.execute(null, null, null);
 
@@ -134,7 +137,7 @@ public class ViewAllPostsFragment extends Fragment {
                     @Override
                     protected String doInBackground(Void... params) {
                         String serverUrl = OLD_URL;
-                        statusCode = 0;
+                        statusCode = -1;
                         Integer oldId = 1;
                         //old_id gets the oldest message id loaded
                             Cursor cursor = myDBHandler.getEntries("ASC");
@@ -158,9 +161,12 @@ public class ViewAllPostsFragment extends Fragment {
                     @Override
                     protected void onPostExecute(String msg) {
                         isFetchOld = false;
-                        if(statusCode != 200)
-                            Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
-                        else displayPosts(tags);
+                        if(statusCode != 200){
+                            if(statusCode == -1)
+                                Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(getActivity(), "No old Msgs", Toast.LENGTH_SHORT).show();
+                        }
+                        displayPosts(tags);
                     }
                 }.execute(null, null, null);
             }

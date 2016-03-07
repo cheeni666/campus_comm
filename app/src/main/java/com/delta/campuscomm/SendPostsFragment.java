@@ -3,8 +3,6 @@ package com.delta.campuscomm;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -35,7 +33,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 
 import static com.delta.campuscomm.CommonUtilities.*;
 
@@ -221,7 +218,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                                     paramss.put("tags", object.toString());
                                     paramss.put("sender", username);
                                         try {
-                                            posta(serverUrl, paramss);
+                                            post(serverUrl, paramss);
                                         } catch (IOException e) {
                                             Toast.makeText(getActivity(), "Failed to connect!!", Toast.LENGTH_SHORT).show();
                                         }
@@ -342,7 +339,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
         return view;
     }
 
-    private void posta(String endpoint, Map<String, String> params)
+    private void post(String endpoint, Map<String, String> params)
             throws IOException {
 
         URL url;

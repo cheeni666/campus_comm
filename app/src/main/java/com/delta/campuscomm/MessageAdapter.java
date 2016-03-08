@@ -2,6 +2,8 @@ package com.delta.campuscomm;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,7 @@ public class MessageAdapter extends ArrayAdapter<String> {
         TextView textViewMessage = (TextView) customview.findViewById(R.id.textViewMessageMessageAdapter);
         TextView textViewTime = (TextView) customview.findViewById(R.id.textViewTimeMessageAdapter);
         ImageView imageViewStrip = (ImageView) customview.findViewById(R.id.imageViewStripMessageAdapter);
-        GridView gridView = (GridView) customview.findViewById(R.id.gridView_message_adapter);
+        RecyclerView recyclerGridView = (RecyclerView) customview.findViewById(R.id.gridView_message_adapter);
         int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
         imageViewStrip.setBackgroundColor(color);
         try {
@@ -77,8 +79,10 @@ public class MessageAdapter extends ArrayAdapter<String> {
                 textViewTime.setText("today at " + time[0] + ":" + time[1]);
             }
             TagsGridAdapter tagsGridAdapter = new TagsGridAdapter(getContext(),tags);
-            Log.d("count",tagsGridAdapter.getCount()+"");
-            gridView.setAdapter(tagsGridAdapter);
+            Log.d("count", tagsGridAdapter.getItemCount() + "");
+            StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(6,StaggeredGridLayoutManager.VERTICAL);
+            recyclerGridView.setLayoutManager(staggeredGridLayoutManager);
+            recyclerGridView.setAdapter(tagsGridAdapter);
             tagsGridAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();

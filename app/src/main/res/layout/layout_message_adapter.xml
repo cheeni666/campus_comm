@@ -54,10 +54,11 @@
         android:layout_alignBottom="@+id/textViewMessageMessageAdapter"
         android:background="#0044ff" />
 
-    <GridView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/gridView_message_adapter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:isScrollContainer="false"
         android:layout_below="@id/textViewMessageMessageAdapter"
         android:layout_margin="5dp"/>
 </RelativeLayout>

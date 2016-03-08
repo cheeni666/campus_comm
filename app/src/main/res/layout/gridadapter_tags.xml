@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="2dp"
                 android:orientation="vertical">
@@ -9,11 +9,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_below="@+id/delete_button"
         android:focusable="false"
         android:text="HEY"
         android:textColor="#fff"
         android:background="@drawable/tags_bg"
-        android:textSize="15dp"
-        android:gravity="center_vertical" />
+        android:textSize="15dp"/>
 </RelativeLayout>

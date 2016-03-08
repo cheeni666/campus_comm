@@ -30,8 +30,6 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     SharedPreferences store;
     JSONObject tagsJSON = null;
 
-    List<Fragment> fragments;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +70,6 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        myDBHandler.limitTabletoN(100);
-    }
-
-    @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
         pager.setCurrentItem(tab.getPosition());
     }
@@ -93,9 +85,28 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
     }
 
     @Override
-    public String getUserNameSendPostsFragment() {
-        return username;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_all_functions, menu);//Menu Resource, Menu
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item1:
+                Intent intent = new Intent(this,FilterActivity.class);
+                startActivityForResult(intent,1);
+                return true;
+            case R.id.item2:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public String getUserNameSendPostsFragment() { return username; }
 
     @Override
     public String getUserNameViewAllPostsFragment() { return username; }
@@ -115,46 +126,10 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         return tagsJSON;
     }
     @Override
-    public JSONObject getTagsAllPostsFragment() {
-        return tagsJSON;
-    }
+    public JSONObject getTagsAllPostsFragment() { return tagsJSON; }
 
     @Override
-    public JSONObject getTagsDirPostsFragment() {
-        return tagsJSON;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_all_functions, menu);//Menu Resource, Menu
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item1:
-                Intent intent = new Intent(this,FilterActivity.class);
-                startActivityForResult(intent,1);
-                return true;
-            case R.id.item2:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        try {
-            Log.d("tagsJSON",data.getStringExtra("tagsJSON"));
-            tagsJSON = new JSONObject(data.getStringExtra("tagsJSON"));
-        }catch (Exception e) {
-            Log.d(CommonUtilities.TAG,e+"");
-        }
-        this.updataAllFragments();
-    }
+    public JSONObject getTagsDirPostsFragment() { return tagsJSON; }
 
     public void updataAllFragments(){
         //initialise paging
@@ -172,6 +147,24 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         pagerAdapter = new PagerAdapter(this.getSupportFragmentManager(), fragments);
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(4);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            Log.d("tagsJSON",data.getStringExtra("tagsJSON"));
+            tagsJSON = new JSONObject(data.getStringExtra("tagsJSON"));
+        }catch (Exception e) {
+            Log.d(CommonUtilities.TAG,e+"");
+        }
+        this.updataAllFragments();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myDBHandler.limitTabletoN(100);
     }
 
 }

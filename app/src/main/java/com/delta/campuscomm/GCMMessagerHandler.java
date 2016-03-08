@@ -1,7 +1,6 @@
 package com.delta.campuscomm;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class GCMMessagerHandler extends IntentService {
     ArrayList<String> refreshmes;
     Integer newId;
     Integer done;
+    Integer noNewMsgs;
     Handler toast = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -111,34 +113,40 @@ public class GCMMessagerHandler extends IntentService {
 
     }
 
-    private static void generateNotification(Context context, String message) {
-        int icon = R.drawable.plane;
-        long when = System.currentTimeMillis();
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification;
-        notification = new Notification(icon, "CampusMessage", when);
-        String title = message;
+    private void generateNotification(Context context, String message) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.plane)
+                        .setContentTitle("CampusMessage")
+                        .setContentText("You have " + noNewMsgs + "Unread Messages\n"
+                                + "1." + message + "\n." + "\n." + "\n.");
+// Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(context, AllFunctionsActivity.class);
 
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        // set intent so it does not start a new activity
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent =
-                PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        //notification.setLatestEventInfo(context, "CampusMessage", message, intent);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        // Play default notification sound
-        notification.defaults |= Notification.DEFAULT_SOUND;
-
-        // Vibrate if vibrate is enabled
-        notification.defaults |= Notification.DEFAULT_VIBRATE;
-        notificationManager.notify(666, notification);
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(AllFunctionsActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+        mNotificationManager.notify(666, mBuilder.build());
     }
 
     public void updateDB() {
-        for (int i = 0; i < refreshmes.size(); i++) {
+        noNewMsgs = refreshmes.size();
+        for (int i = 0; i < noNewMsgs; i++) {
             myDBHandler.add(refreshmes.get(i));
         }
     }

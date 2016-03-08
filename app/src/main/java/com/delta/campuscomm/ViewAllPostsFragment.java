@@ -81,6 +81,7 @@ public class ViewAllPostsFragment extends Fragment {
             public void onRefresh() {
                 if(isFetchNew){
                     Toast.makeText(getActivity(), "Already Updating", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
                     return;
                 }
                 isFetchNew = true;
@@ -215,14 +216,15 @@ public class ViewAllPostsFragment extends Fragment {
                     String name = names.getString(index);
                     JSONArray dataTagArray = dataTags.getJSONArray(name);
                     JSONArray tagArray = tags.getJSONArray(name);
+                    boolean isFound = false;
                     for(int iteri = 0 ; iteri < tagArray.length() ; iteri++){
-                        boolean isFound = false;
                         for(int iterj = 0 ; iterj < dataTagArray.length() ; iterj++){
                             if(tagArray.getString(iteri).contentEquals(dataTagArray.getString(iterj)))
                                 isFound = true;
                         }
-                        if(!isFound)return false;
                     }
+                    if(dataTagArray.length() * tagArray.length() == 0)isFound = true;
+                    if(!isFound)return false;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

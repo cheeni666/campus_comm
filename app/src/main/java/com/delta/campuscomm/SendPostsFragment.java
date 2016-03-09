@@ -42,7 +42,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
     String username;
     Integer done;
     ArrayList<String> temparray;
-    ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chemical", "prod", "ice", "civil", "meta", "archi"));
+    ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chem", "prod", "ice", "civil", "meta", "archi"));
     ArrayList<String> level2 = new ArrayList<String>();
     ArrayList<String> level3 = new ArrayList<String>(Arrays.asList("btech", "mtech", "other"));
     ArrayList<String> list;

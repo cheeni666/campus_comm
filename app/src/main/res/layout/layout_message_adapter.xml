@@ -1,63 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/card_selector">
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="USERNAME"
-        android:id="@+id/textViewUsernameMessageAdapter"
-        android:typeface="serif"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="12sp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="#000000" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="TIMESTAMP"
-        android:id="@+id/textViewTimeMessageAdapter"
-        android:typeface="sans"
-        android:layout_below="@+id/textViewUsernameMessageAdapter"
-        android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="11sp"
-        android:layout_marginLeft="10dp"
-        android:textColor="#000000" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="MESSAGE"
-        android:id="@+id/textViewMessageMessageAdapter"
-        android:layout_below="@+id/textViewTimeMessageAdapter"
-        android:layout_toRightOf="@+id/imageViewStripMessageAdapter"
-        android:textSize="20sp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
-        android:textColor="#000000" />
-
-    <ImageView
-        android:layout_width="10dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageViewStripMessageAdapter"
-        android:layout_marginLeft="5dp"
-        android:layout_alignTop="@+id/textViewUsernameMessageAdapter"
-        android:layout_alignParentLeft="true"
-        android:layout_alignBottom="@+id/textViewMessageMessageAdapter"
-        android:background="#0044ff" />
-
-    <GridView
-        android:id="@+id/gridView_message_adapter"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textViewMessageMessageAdapter"
-        android:layout_margin="5dp"/>
-</RelativeLayout>
+        android:layout_weight="0.13">
+        <LinearLayout
+            android:layout_width="10dp"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="10dp"
+                android:id="@+id/imageViewStripMessageAdapter"
+                android:layout_height="match_parent"
+                android:background="#0044ff" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="USERNAME"
+                android:id="@+id/textViewUsernameMessageAdapter"
+                android:typeface="serif"
+                android:textSize="12sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:textColor="#000000" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="TIMESTAMP"
+                android:id="@+id/textViewTimeMessageAdapter"
+                android:typeface="sans"
+                android:textSize="11sp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="MESSAGE"
+                android:id="@+id/textViewMessageMessageAdapter"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:id="@+id/textView_tags"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/colorPureWhite"
+                android:background="@drawable/tags_bg"
+                android:gravity="center"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

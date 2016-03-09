@@ -42,7 +42,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
     String username;
     Integer done;
     ArrayList<String> temparray;
-    ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chemical", "prod", "ice", "civil", "meta", "archi"));
+    ArrayList<String> level1 = new ArrayList<String>(Arrays.asList("cse", "ece", "eee", "mech", "chem", "prod", "ice", "civil", "meta", "archi"));
     ArrayList<String> level2 = new ArrayList<String>();
     ArrayList<String> level3 = new ArrayList<String>(Arrays.asList("btech", "mtech", "other"));
     ArrayList<String> list;
@@ -215,6 +215,28 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                                     String serverUrl = SEND_URL;
                                     Map<String, String> paramss = new HashMap<String, String>();
                                     paramss.put("message", message);
+                                    try {
+                                        if (object.getJSONArray("dept").length() == 0) {
+                                            JSONArray deptfullList = new JSONArray();
+                                            for(int i=0;i<level1.size();i++)
+                                                deptfullList.put(i,level1.get(i));
+                                            object.put("dept", deptfullList);
+                                        }
+                                        if (object.getJSONArray("year").length() == 0) {
+                                            JSONArray yearsfullList = new JSONArray();
+                                            for(int i=0;i<level2.size();i++)
+                                                yearsfullList.put(i, level2.get(i));
+                                            object.put("year", yearsfullList);
+                                        }
+                                        if (object.getJSONArray("degree").length() == 0) {
+                                            JSONArray degreefullList = new JSONArray();
+                                            for(int i=0;i<level3.size();i++)
+                                                degreefullList.put(i,level1.get(i));
+                                            object.put("dept", degreefullList);
+                                        }
+                                    }catch(JSONException e) {
+                                        Log.e("JsonException",e+"");
+                                    }
                                     paramss.put("tags", object.toString());
                                     paramss.put("sender", username);
                                         try {

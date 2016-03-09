@@ -162,13 +162,14 @@ public class ViewFestPostsFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(String msg) {
+                        isFetchOld = false;
                         if (statusCode != 200){
                             if(statusCode == -1)
                                 Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
                             else Toast.makeText(getActivity(), "No old Msgs", Toast.LENGTH_SHORT).show();
                         }
                         displayPosts(tags);
-                        isFetchOld = false;
+                        listView.setSelection(posts.size() - refreshmes.size());
                     }
                 }.execute(null, null, null);
             }

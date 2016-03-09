@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -161,13 +162,13 @@ public class ViewDirPostsFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(String msg) {
-                        isFetchOld = false;
                         if (statusCode != 200){
                             if(statusCode == -1)
                                 Toast.makeText(getActivity(), "Failed to fetch old Msgs", Toast.LENGTH_SHORT).show();
                             else Toast.makeText(getActivity(), "No old Msgs", Toast.LENGTH_SHORT).show();
                         }
                         displayPosts(tags);
+                        isFetchOld = false;
                     }
                 }.execute(null, null, null);
             }

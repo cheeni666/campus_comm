@@ -66,21 +66,19 @@ public class MessageAdapter extends ArrayAdapter<String> {
             String[] date = timestamp[0].split("-");
             String[] time = timestamp[1].split(":");
             if (calendar.get(Calendar.YEAR) != Integer.parseInt(date[0])) {
-                int t = calendar.get(Calendar.YEAR) - Integer.parseInt(date[0]);
-                textViewTime.setText(t + " years ago");
+                textViewTime.setText(timestamp[0]);
             } else if (1 + calendar.get(Calendar.MONTH) != Integer.parseInt(date[1])) {
-                int t = 1 + calendar.get(Calendar.MONTH) - Integer.parseInt(date[1]);
-                textViewTime.setText(t + " months ago");
+                textViewTime.setText(timestamp[0]);
             } else if (calendar.get(Calendar.DAY_OF_MONTH) != Integer.parseInt(date[2])) {
                 int t = calendar.get(Calendar.DAY_OF_MONTH) - Integer.parseInt(date[2]);
                 if (t == 1) textViewTime.setText("yesterday");
-                else textViewTime.setText(t + " days ago");
+                else textViewTime.setText(timestamp[0]);
             } else {
                 textViewTime.setText("today at " + time[0] + ":" + time[1]);
             }
 
             for(int i=0;i<tags.size();i++)
-                textViewTags.append(tags.get(i).toUpperCase()+"  ");
+                textViewTags.append(tags.get(i).toUpperCase()+", ");
 
         } catch (JSONException e) {
             e.printStackTrace();

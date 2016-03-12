@@ -150,6 +150,8 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
         editText = (EditText) view.findViewById(R.id.editText);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fabTags = (FloatingActionButton) view.findViewById(R.id.button_tags);
+        fab.setImageResource(R.drawable.ic_content_send);
+
         fabTags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,12 +162,10 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                     level = 1;
                 listAdapter = null;
                 if (level == 1) {
-                    listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level1,stateLevel1);
-                }
-                else if (level == 2) {
+                    listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level1, stateLevel1);
+                } else if (level == 2) {
                     listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level2, stateLevel2);
-                }
-                else if (level == 3) {
+                } else if (level == 3) {
                     listAdapter = new ListAdapter(getActivity(), R.layout.adapter_list, level3, stateLevel3);
                 }
                 listView.setAdapter(listAdapter);
@@ -179,7 +179,6 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                 return true;
             }
         });
-        fabTags.setVisibility(View.GONE);
         username = mListener.getUserNameSendPostsFragment();
         listView = (ListView) view.findViewById(R.id.tags_list);
 
@@ -195,10 +194,7 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
             @Override
             public void onClick(View view) {
                 if (firsttimeclick) {
-                    editText.setVisibility(View.VISIBLE);
                     gridView.setVisibility(View.VISIBLE);
-                    fabTags.setVisibility(View.VISIBLE);
-                    fab.setImageResource(R.drawable.ic_content_send);
                     firsttimeclick = false;
                 } else {
                     final String message = editText.getText().toString();
@@ -289,17 +285,6 @@ public class SendPostsFragment extends Fragment implements GridViewAdapter.Delet
                             object.accumulate("dept", level1.get(i));
                             temparray.add(level1.get(i));
                         }
-                        /*JSONArray array = object.getJSONArray("dept");
-                        if (array != null)
-                            for (int k = 0; k < array.length(); k++)
-                                list.add(array.get(k).toString());
-                        if (!list.contains(level1.get(i))) {
-                            object.accumulate("dept", level1.get(i));
-                            temparray1.add(level1.get(i));
-                        }
-                        for (int z = 0; z < temparray1.size(); z++)
-                            if (!temparray.contains(temparray1.get(z)))
-                                temparray.add(temparray1.get(z));*/
                         listAdapter.notifyDataSetChanged();
                         gridViewAdapter.notifyDataSetChanged();
                         gridViewAdapter.setButtonclicklistener(listener);

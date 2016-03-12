@@ -31,6 +31,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_navigation_arrow_forward"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPrev"
         android:layout_width="wrap_content"

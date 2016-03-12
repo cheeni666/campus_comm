@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -37,16 +38,25 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        butonEnter.setOnClickListener(new View.OnClickListener() {
+        butonEnter.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                butonEnter.setBackgroundColor(getResources().getColor(R.color.primarycolor));
-                Intent intent = new Intent(MainActivity.this, AuthorActivity.class);
-                startActivity(intent);
-                butonEnter.setBackgroundColor(getResources().getColor(R.color.enterButtonColor));
-                finish();
+            public boolean onTouch(View v, MotionEvent event) {
+                int intEvent = event.getAction();
+
+                if(intEvent == MotionEvent.ACTION_DOWN)
+                    butonEnter.setBackgroundResource(R.drawable.round_bg_white);
+
+                else if(intEvent == MotionEvent.ACTION_UP){
+                    butonEnter.setBackgroundResource(R.drawable.round_bg_blue);
+                    Intent intent = new Intent(MainActivity.this, AuthorActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+                return true;
             }
         });
+
     }
 
 }

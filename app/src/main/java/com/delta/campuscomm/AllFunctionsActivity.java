@@ -99,6 +99,19 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
                 startActivityForResult(intent,1);
                 return true;
             case R.id.item2:
+                tagsJSON = null;
+                updataAllFragments();
+                return true;
+            case R.id.item3:
+                return true;
+            case R.id.item4:
+                SharedPreferences store = getSharedPreferences("campuscomm", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = store.edit();
+                editor.putString("userName", null);
+                editor.apply();
+                Intent intent1 = new Intent(this, MainActivity.class);
+                startActivity(intent1);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -135,11 +148,8 @@ public class AllFunctionsActivity extends ActionBarActivity implements ActionBar
         //initialise paging
         List<Fragment> fragments = new Vector<Fragment>();
         ViewAllPostsFragment viewAllPostsFragment = (ViewAllPostsFragment)Fragment.instantiate(this, ViewAllPostsFragment.class.getName());
-        //viewAllPostsFragment.displayPosts(tagsJSON);
         ViewDirPostsFragment viewDirPostsFragment = (ViewDirPostsFragment)Fragment.instantiate(this, ViewDirPostsFragment.class.getName());
-        //viewDirPostsFragment.displayPosts(tagsJSON);
         ViewFestPostsFragment viewFestPostsFragment = (ViewFestPostsFragment)Fragment.instantiate(this, ViewFestPostsFragment.class.getName());
-        //viewFestPostsFragment.displayPosts(tagsJSON);
         fragments.add(viewAllPostsFragment);
         fragments.add(viewDirPostsFragment);
         fragments.add(viewFestPostsFragment);

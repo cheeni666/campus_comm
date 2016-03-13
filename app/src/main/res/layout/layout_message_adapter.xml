@@ -60,4 +60,14 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="5dp" />
 
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="views"
+        android:id="@+id/buttonViewsMessageAdapter"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/textViewMessageMessageAdapter"
+        android:textSize="10sp" />
 </RelativeLayout>
